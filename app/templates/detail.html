@@ -1,33 +1,58 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon, status_badge, confidence_meter %}
 
 {% block title %}{{ review.case_reference }} · Model Review Board{% endblock %}
 
 {% block content %}
-<h1>{{ review.case_reference }} <span class="badge {{ review.decision }}">{{ review.decision }}</span></h1>
+<a class="back-link" href="{{ url_for('reviews.dashboard') }}">{{ icon("back", 16) }}Back to all reviews</a>
 
-<dl class="details">
-  <dt>Prediction</dt>
-  <dd>{{ review.prediction }}</dd>
-
-  <dt>Confidence</dt>
-  <dd>{{ "%.2f"|format(review.confidence) }}</dd>
-
-  <dt>Input summary</dt>
-  <dd>{{ review.input_summary }}</dd>
-
-  <dt>Reviewer notes</dt>
-  <dd class="notes">{{ review.notes or "No notes yet." }}</dd>
-
-  <dt>Created</dt>
-  <dd>{{ review.created_at.strftime("%Y-%m-%d %H:%M") }}</dd>
-
-  <dt>Last updated</dt>
-  <dd>{{ review.updated_at.strftime("%Y-%m-%d %H:%M") }}</dd>
-</dl>
-
-<div class="form-actions">
-  <a class="button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Edit decision</a>
-  <a href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">Delete</a>
-  <a href="{{ url_for('reviews.dashboard') }}">Back to all reviews</a>
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Case</p>
+    <h1>{{ review.case_reference }} {{ status_badge(review.decision) }}</h1>
+  </div>
+  <div class="head-actions">
+    <a class="button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">{{ icon("edit", 16) }}Edit decision</a>
+    <a class="button ghost danger" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">{{ icon("trash", 16) }}Delete</a>
+  </div>
 </div>
+
+<div class="detail-grid">
+  <section class="card">
+    <h2>Model output</h2>
+    <dl class="details">
+      <dt>Prediction</dt>
+      <dd class="big">{{ review.prediction }}</dd>
+
+      <dt>Confidence</dt>
+      <dd>{{ confidence_meter(review.confidence, wide=true) }}</dd>
+
+      <dt>Input summary</dt>
+      <dd>{{ review.input_summary }}</dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2>Review</h2>
+    <dl class="details">
+      <dt>Decision</dt>
+      <dd>{{ status_badge(review.decision) }}</dd>
+
+      <dt>Created</dt>
+      <dd>{{ review.created_at.strftime("%d %b %Y, %H:%M") }}</dd>
+
+      <dt>Last updated</dt>
+      <dd>{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</dd>
+    </dl>
+  </section>
+</div>
+
+<section class="card notes-card">
+  <h2>{{ icon("notes", 18) }}Reviewer notes</h2>
+  {% if review.notes %}
+  <blockquote class="notes">{{ review.notes }}</blockquote>
+  {% else %}
+  <p class="subtle">No notes yet. <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Add a note</a> so the next reviewer knows what you checked.</p>
+  {% endif %}
+</section>
 {% endblock %}

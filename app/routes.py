@@ -24,10 +24,18 @@ def status_totals() -> dict[str, int]:
 
 @bp.get("/")
 def dashboard():
-    reviews = db.session.scalars(
-        db.select(Review).order_by(Review.created_at.desc(), Review.id.desc())
-    ).all()
-    return render_template("dashboard.html", reviews=reviews, totals=status_totals())
+    # ?status=pending etc. narrows the table; anything else shows every review.
+    status = request.args.get("status")
+    if status not in DECISIONS:
+        status = None
+
+    query = db.select(Review).order_by(Review.created_at.desc(), Review.id.desc())
+    if status:
+        query = query.where(Review.decision == status)
+    reviews = db.session.scalars(query).all()
+    return render_template(
+        "dashboard.html", reviews=reviews, totals=status_totals(), status=status
+    )
 
 
 @bp.route("/reviews/new", methods=["GET", "POST"])

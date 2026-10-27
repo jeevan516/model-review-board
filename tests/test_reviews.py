@@ -15,7 +15,8 @@ from .conftest import VALID_FORM
 def test_dashboard_empty_state(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"No reviews yet." in response.data
+    assert b"No reviews yet" in response.data
+    assert b"Create the first review" in response.data
 
 
 def test_dashboard_lists_reviews_and_totals(client, review):
@@ -33,10 +34,33 @@ def test_dashboard_lists_reviews_and_totals(client, review):
     html = client.get("/").get_data(as_text=True)
     assert "CASE-100" in html
     assert "CASE-101" in html
-    assert '<span class="count">2</span> Total' in html
-    assert '<span class="count">1</span> Pending' in html
-    assert '<span class="count">1</span> Approved' in html
-    assert '<span class="count">0</span> Rejected' in html
+    assert 'id="total-total">2<' in html
+    assert 'id="total-pending">1<' in html
+    assert 'id="total-approved">1<' in html
+    assert 'id="total-rejected">0<' in html
+
+
+def test_dashboard_filters_by_decision(client, review):
+    db.session.add(
+        Review(
+            case_reference="CASE-102",
+            prediction="fraud",
+            confidence=0.9,
+            input_summary="Card used in two countries.",
+            decision="rejected",
+        )
+    )
+    db.session.commit()
+
+    html = client.get("/?status=rejected").get_data(as_text=True)
+    assert "CASE-102" in html
+    assert "CASE-100" not in html
+    # Totals still describe every review, not just the filtered ones.
+    assert 'id="total-total">2<' in html
+
+    assert "No approved reviews" in client.get("/?status=approved").get_data(as_text=True)
+    # An unknown status falls back to showing everything.
+    assert "CASE-100" in client.get("/?status=bogus").get_data(as_text=True)
 
 
 # Create and validation

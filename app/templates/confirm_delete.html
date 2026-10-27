@@ -1,14 +1,17 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon, status_badge %}
 
 {% block title %}Delete {{ review.case_reference }} · Model Review Board{% endblock %}
 
 {% block content %}
-<h1>Delete review {{ review.case_reference }}?</h1>
+<section class="card confirm-card">
+  <span class="confirm-icon">{{ icon("trash", 28) }}</span>
+  <h1>Delete review {{ review.case_reference }}?</h1>
+  <p>This permanently removes the review, its decision {{ status_badge(review.decision) }} and any reviewer notes. It cannot be undone.</p>
 
-<p>This permanently removes the review, its decision (<strong>{{ review.decision }}</strong>) and any reviewer notes. It cannot be undone.</p>
-
-<form method="post" action="{{ url_for('reviews.delete_review', review_id=review.id) }}" class="form-actions">
-  <button type="submit" class="button danger">Delete review</button>
-  <a href="{{ url_for('reviews.review_detail', review_id=review.id) }}">Cancel</a>
-</form>
+  <form method="post" action="{{ url_for('reviews.delete_review', review_id=review.id) }}" class="form-actions">
+    <button type="submit" class="button danger">{{ icon("trash", 16) }}Delete review</button>
+    <a class="button ghost" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">Cancel</a>
+  </form>
+</section>
 {% endblock %}

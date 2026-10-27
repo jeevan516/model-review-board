@@ -1,25 +1,40 @@
+{% from "_icons.html" import icon -%}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>{% block title %}Model Review Board{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="{{ url_for('reviews.dashboard') }}">Model Review Board</a>
-    <a class="button" href="{{ url_for('reviews.create_review') }}">New review</a>
+    <div class="header-inner">
+      <a class="brand" href="{{ url_for('reviews.dashboard') }}">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="" width="32" height="32">
+        <span>
+          <span class="brand-name">Model Review Board</span>
+          <span class="brand-tag">Human review for model predictions</span>
+        </span>
+      </a>
+      <a class="button" href="{{ url_for('reviews.create_review') }}">{{ icon("plus", 16) }}New review</a>
+    </div>
   </header>
 
   <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
-        <p class="flash flash-{{ category }}" role="status">{{ message }}</p>
+        <p class="flash flash-{{ category }}" role="status">
+          {{ icon("approved" if category == "success" else "warning", 18) }}{{ message }}
+        </p>
       {% endfor %}
     {% endwith %}
 
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="site-footer">Model Review Board · <a href="{{ url_for('reviews.health') }}">System health</a></footer>
 </body>
 </html>

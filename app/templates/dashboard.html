@@ -1,49 +1,127 @@
 {% extends "base.html" %}
+{% from "_icons.html" import icon, status_badge, confidence_meter %}
 
 {% block content %}
-<h1>Reviews</h1>
+<div class="page-head">
+  <div>
+    <h1>Reviews</h1>
+    <p class="subtle">Check model predictions before they are passed on to other teams.</p>
+  </div>
+</div>
 
-<section class="totals" aria-label="Status totals">
-  <div class="total"><span class="count">{{ totals.total }}</span> Total</div>
-  <div class="total pending"><span class="count">{{ totals.pending }}</span> Pending</div>
-  <div class="total approved"><span class="count">{{ totals.approved }}</span> Approved</div>
-  <div class="total rejected"><span class="count">{{ totals.rejected }}</span> Rejected</div>
+<section class="stats" aria-label="Status totals">
+  <div class="stat" data-status="total">
+    <span class="stat-icon">{{ icon("total", 20) }}</span>
+    <span class="stat-label">Total reviews</span>
+    <span class="stat-value" id="total-total">{{ totals.total }}</span>
+  </div>
+  {% for decision in ("pending", "approved", "rejected") %}
+  <div class="stat" data-status="{{ decision }}">
+    <span class="stat-icon">{{ icon(decision, 20) }}</span>
+    <span class="stat-label">{{ decision|capitalize }}</span>
+    <span class="stat-value" id="total-{{ decision }}">{{ totals[decision] }}</span>
+  </div>
+  {% endfor %}
 </section>
 
-{% if reviews %}
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>Case</th>
-        <th>Prediction</th>
-        <th>Confidence</th>
-        <th>Decision</th>
-        <th>Updated</th>
-        <th><span class="visually-hidden">Actions</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for review in reviews %}
-      <tr>
-        <td><a href="{{ url_for('reviews.review_detail', review_id=review.id) }}">{{ review.case_reference }}</a></td>
-        <td>{{ review.prediction }}</td>
-        <td>{{ "%.2f"|format(review.confidence) }}</td>
-        <td><span class="badge {{ review.decision }}">{{ review.decision }}</span></td>
-        <td>{{ review.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
-        <td class="actions">
-          <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Edit</a>
-          <a href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">Delete</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-{% else %}
-<div class="empty">
-  <p>No reviews yet.</p>
-  <a class="button" href="{{ url_for('reviews.create_review') }}">Create the first review</a>
-</div>
+{% if totals.total %}
+<section class="card distribution" aria-labelledby="distribution-title">
+  <div class="card-head">
+    <h2 id="distribution-title">Decision progress</h2>
+    <span class="subtle">{{ "%.0f"|format((totals.approved + totals.rejected) / totals.total * 100) }}% decided</span>
+  </div>
+  <div class="stack" role="img"
+       aria-label="{% for d in ('pending', 'approved', 'rejected') %}{{ totals[d] }} {{ d }}{{ ', ' if not loop.last }}{% endfor %}">
+    {% for decision in ("pending", "approved", "rejected") if totals[decision] %}
+    {% set pct = totals[decision] / totals.total * 100 %}
+    <span class="stack-seg" data-status="{{ decision }}" style="flex-grow: {{ totals[decision] }}" tabindex="0"
+          data-tip="{{ decision|capitalize }}: {{ totals[decision] }} ({{ '%.0f'|format(pct) }}%)"></span>
+    {% endfor %}
+  </div>
+  <ul class="legend">
+    {% for decision in ("pending", "approved", "rejected") %}
+    <li data-status="{{ decision }}">
+      <span class="legend-swatch"></span>{{ decision|capitalize }}
+      <strong>{{ totals[decision] }}</strong>
+      <span class="subtle">{{ "%.0f"|format(totals[decision] / totals.total * 100) }}%</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
 {% endif %}
+
+<section class="card list-card" aria-labelledby="list-title">
+  <div class="card-head">
+    <h2 id="list-title" class="visually-hidden">Review list</h2>
+    <nav class="tabs" aria-label="Filter by decision">
+      <a href="{{ url_for('reviews.dashboard') }}" {% if not status %}aria-current="page"{% endif %}>
+        All <span class="tab-count">{{ totals.total }}</span></a>
+      {% for decision in ("pending", "approved", "rejected") %}
+      <a href="{{ url_for('reviews.dashboard', status=decision) }}" {% if status == decision %}aria-current="page"{% endif %}>
+        {{ decision|capitalize }} <span class="tab-count">{{ totals[decision] }}</span></a>
+      {% endfor %}
+    </nav>
+  </div>
+
+  {% if reviews %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Case</th>
+          <th scope="col">Prediction</th>
+          <th scope="col">Confidence</th>
+          <th scope="col">Decision</th>
+          <th scope="col">Updated</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for review in reviews %}
+        <tr>
+          <td>
+            <a class="case-link" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">{{ review.case_reference }}</a>
+            <span class="case-summary">{{ review.input_summary|truncate(60) }}</span>
+          </td>
+          <td>{{ review.prediction }}</td>
+          <td>{{ confidence_meter(review.confidence) }}</td>
+          <td>{{ status_badge(review.decision) }}</td>
+          <td class="subtle nowrap">{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</td>
+          <td class="row-actions">
+            <a class="icon-button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}"
+               title="Edit {{ review.case_reference }}">{{ icon("edit", 16) }}<span class="visually-hidden">Edit {{ review.case_reference }}</span></a>
+            <a class="icon-button danger" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}"
+               title="Delete {{ review.case_reference }}">{{ icon("trash", 16) }}<span class="visually-hidden">Delete {{ review.case_reference }}</span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% elif status %}
+  <div class="empty">
+    <p class="empty-title">No {{ status }} reviews</p>
+    <p class="subtle">Nothing has this decision right now.</p>
+    <a href="{{ url_for('reviews.dashboard') }}">Show all reviews</a>
+  </div>
+  {% else %}
+  <div class="empty">
+    <svg class="empty-art" width="160" height="120" viewBox="0 0 160 120" aria-hidden="true">
+      <rect x="38" y="14" width="84" height="100" rx="10" class="art-paper"/>
+      <rect x="62" y="6" width="36" height="16" rx="5" class="art-clip"/>
+      <rect x="52" y="40" width="10" height="10" rx="3" class="art-box"/>
+      <rect x="70" y="42" width="38" height="6" rx="3" class="art-line"/>
+      <rect x="52" y="60" width="10" height="10" rx="3" class="art-box"/>
+      <rect x="70" y="62" width="30" height="6" rx="3" class="art-line"/>
+      <rect x="52" y="80" width="10" height="10" rx="3" class="art-box"/>
+      <rect x="70" y="82" width="34" height="6" rx="3" class="art-line"/>
+      <circle cx="118" cy="92" r="16" class="art-badge"/>
+      <path d="M118 84v16M110 92h16" class="art-plus"/>
+    </svg>
+    <p class="empty-title">No reviews yet</p>
+    <p class="subtle">Add the first model prediction to start the review queue.</p>
+    <a class="button" href="{{ url_for('reviews.create_review') }}">{{ icon("plus", 16) }}Create the first review</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

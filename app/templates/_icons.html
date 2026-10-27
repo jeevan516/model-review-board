@@ -1,0 +1,42 @@
+{# Inline SVG icons (Lucide-style strokes) so the app needs no external assets. #}
+{% macro icon(name, size=18, cls="") -%}
+<svg class="icon {{ cls }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {%- if name == "pending" -%}
+    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+  {%- elif name == "approved" -%}
+    <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+  {%- elif name == "rejected" -%}
+    <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
+  {%- elif name == "total" -%}
+    <path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>
+  {%- elif name == "plus" -%}
+    <path d="M5 12h14"/><path d="M12 5v14"/>
+  {%- elif name == "edit" -%}
+    <path d="M21.17 6.81a1 1 0 0 0-3.98-3.98L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/>
+  {%- elif name == "trash" -%}
+    <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+  {%- elif name == "back" -%}
+    <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+  {%- elif name == "warning" -%}
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>
+  {%- elif name == "notes" -%}
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>
+  {%- elif name == "chevron" -%}
+    <path d="m9 18 6-6-6-6"/>
+  {%- endif -%}
+</svg>
+{%- endmacro %}
+
+{# Status pill: icon + label, so state is never shown by color alone. #}
+{% macro status_badge(decision) -%}
+<span class="badge" data-status="{{ decision }}">{{ icon(decision, 14) }}{{ decision|capitalize }}</span>
+{%- endmacro %}
+
+{# Thin horizontal meter for a 0-1 confidence value. #}
+{% macro confidence_meter(value, wide=false) -%}
+<span class="meter{{ ' meter-wide' if wide }}" role="img" aria-label="Confidence {{ '%.0f'|format(value * 100) }} percent">
+  <span class="meter-track"><span class="meter-fill" style="width: {{ '%.1f'|format(value * 100) }}%"></span></span>
+  <span class="meter-value">{{ "%.2f"|format(value) }}</span>
+</span>
+{%- endmacro %}
