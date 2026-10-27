@@ -1,0 +1,14 @@
+# Secrets and local configuration
+.env
+
+# Local SQLite database files
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

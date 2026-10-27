@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ review.case_reference }} · Model Review Board{% endblock %}
+
+{% block content %}
+<h1>{{ review.case_reference }} <span class="badge {{ review.decision }}">{{ review.decision }}</span></h1>
+
+<dl class="details">
+  <dt>Prediction</dt>
+  <dd>{{ review.prediction }}</dd>
+
+  <dt>Confidence</dt>
+  <dd>{{ "%.2f"|format(review.confidence) }}</dd>
+
+  <dt>Input summary</dt>
+  <dd>{{ review.input_summary }}</dd>
+
+  <dt>Reviewer notes</dt>
+  <dd class="notes">{{ review.notes or "No notes yet." }}</dd>
+
+  <dt>Created</dt>
+  <dd>{{ review.created_at.strftime("%Y-%m-%d %H:%M") }}</dd>
+
+  <dt>Last updated</dt>
+  <dd>{{ review.updated_at.strftime("%Y-%m-%d %H:%M") }}</dd>
+</dl>
+
+<div class="form-actions">
+  <a class="button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Edit decision</a>
+  <a href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">Delete</a>
+  <a href="{{ url_for('reviews.dashboard') }}">Back to all reviews</a>
+</div>
+{% endblock %}

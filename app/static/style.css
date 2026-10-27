@@ -1,0 +1,161 @@
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1c2430;
+  --muted: #5b6676;
+  --border: #d9dee5;
+  --accent: #2457c5;
+  --pending: #8a5a00;
+  --pending-bg: #fff4d6;
+  --approved: #1d6b3a;
+  --approved-bg: #dff3e6;
+  --rejected: #a12a2a;
+  --rejected-bg: #fbe3e3;
+  --danger: #b42318;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { font-weight: 700; color: var(--text); text-decoration: none; }
+
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+
+h1 { font-size: 1.5rem; margin: 0 0 16px; }
+
+a { color: var(--accent); }
+
+.button {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.button.danger { background: var(--danger); }
+
+.flash { padding: 10px 14px; border-radius: 6px; margin: 0 0 16px; }
+.flash-success { background: var(--approved-bg); color: var(--approved); }
+.flash-error { background: var(--rejected-bg); color: var(--rejected); }
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.total {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--muted);
+}
+.total .count { display: block; font-size: 1.75rem; font-weight: 700; color: var(--text); }
+.total.pending .count { color: var(--pending); }
+.total.approved .count { color: var(--approved); }
+.total.rejected .count { color: var(--rejected); }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+tbody tr:last-child td { border-bottom: 0; }
+td.actions a { margin-right: 10px; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  vertical-align: middle;
+}
+.badge.pending { background: var(--pending-bg); color: var(--pending); }
+.badge.approved { background: var(--approved-bg); color: var(--approved); }
+.badge.rejected { background: var(--rejected-bg); color: var(--rejected); }
+
+.empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+.review-form label { font-weight: 600; margin-top: 14px; }
+.review-form label:first-child { margin-top: 0; }
+.review-form input,
+.review-form select,
+.review-form textarea {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  background: #fff;
+  color: var(--text);
+}
+.review-form [aria-invalid="true"] { border-color: var(--danger); }
+.optional { font-weight: 400; color: var(--muted); }
+.field-error { color: var(--danger); margin: 4px 0 0; font-size: 0.9rem; }
+
+.form-actions { display: flex; align-items: center; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0;
+}
+.details dt { font-weight: 600; color: var(--muted); }
+.details dd { margin: 0; }
+.details .notes { white-space: pre-wrap; }
+
+@media (max-width: 560px) {
+  .details { grid-template-columns: 1fr; }
+  .details dd { margin-bottom: 8px; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

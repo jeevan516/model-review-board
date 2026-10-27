@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% set editing = review is not none %}
+{% block title %}{{ "Edit " ~ review.case_reference if editing else "New review" }} · Model Review Board{% endblock %}
+
+{% macro field_error(name) -%}
+  {% if errors[name] %}<p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}
+{%- endmacro %}
+
+{% block content %}
+<h1>{{ "Edit review " ~ review.case_reference if editing else "New review" }}</h1>
+
+{% if errors %}
+<p class="flash flash-error" role="alert">Please fix the {{ errors|length }} highlighted field{{ "s" if errors|length > 1 }} below.</p>
+{% endif %}
+
+<form method="post" class="review-form" novalidate
+      action="{{ url_for('reviews.edit_review', review_id=review.id) if editing else url_for('reviews.create_review') }}">
+  <label for="case_reference">Case reference</label>
+  <input id="case_reference" name="case_reference" maxlength="64" required
+         value="{{ values.case_reference or '' }}"
+         {% if errors.case_reference %}aria-invalid="true" aria-describedby="case_reference-error"{% endif %}>
+  {{ field_error("case_reference") }}
+
+  <label for="prediction">Prediction</label>
+  <input id="prediction" name="prediction" maxlength="120" required
+         value="{{ values.prediction or '' }}"
+         {% if errors.prediction %}aria-invalid="true" aria-describedby="prediction-error"{% endif %}>
+  {{ field_error("prediction") }}
+
+  <label for="confidence">Confidence (0 to 1)</label>
+  <input id="confidence" name="confidence" type="number" step="0.01" min="0" max="1" required
+         value="{{ values.confidence if values.confidence is not none else '' }}"
+         {% if errors.confidence %}aria-invalid="true" aria-describedby="confidence-error"{% endif %}>
+  {{ field_error("confidence") }}
+
+  <label for="input_summary">Input summary</label>
+  <textarea id="input_summary" name="input_summary" rows="3" maxlength="500" required
+            {% if errors.input_summary %}aria-invalid="true" aria-describedby="input_summary-error"{% endif %}>{{ values.input_summary or '' }}</textarea>
+  {{ field_error("input_summary") }}
+
+  <label for="decision">Decision</label>
+  <select id="decision" name="decision"
+          {% if errors.decision %}aria-invalid="true" aria-describedby="decision-error"{% endif %}>
+    {% for option in ("pending", "approved", "rejected") %}
+    <option value="{{ option }}" {% if (values.decision or "pending") == option %}selected{% endif %}>{{ option|capitalize }}</option>
+    {% endfor %}
+  </select>
+  {{ field_error("decision") }}
+
+  <label for="notes">Reviewer notes <span class="optional">(optional)</span></label>
+  <textarea id="notes" name="notes" rows="4" maxlength="2000"
+            {% if errors.notes %}aria-invalid="true" aria-describedby="notes-error"{% endif %}>{{ values.notes or '' }}</textarea>
+  {{ field_error("notes") }}
+
+  <div class="form-actions">
+    <button type="submit" class="button">{{ "Save changes" if editing else "Create review" }}</button>
+    <a href="{{ url_for('reviews.review_detail', review_id=review.id) if editing else url_for('reviews.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

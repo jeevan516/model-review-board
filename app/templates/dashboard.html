@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Reviews</h1>
+
+<section class="totals" aria-label="Status totals">
+  <div class="total"><span class="count">{{ totals.total }}</span> Total</div>
+  <div class="total pending"><span class="count">{{ totals.pending }}</span> Pending</div>
+  <div class="total approved"><span class="count">{{ totals.approved }}</span> Approved</div>
+  <div class="total rejected"><span class="count">{{ totals.rejected }}</span> Rejected</div>
+</section>
+
+{% if reviews %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Case</th>
+        <th>Prediction</th>
+        <th>Confidence</th>
+        <th>Decision</th>
+        <th>Updated</th>
+        <th><span class="visually-hidden">Actions</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in reviews %}
+      <tr>
+        <td><a href="{{ url_for('reviews.review_detail', review_id=review.id) }}">{{ review.case_reference }}</a></td>
+        <td>{{ review.prediction }}</td>
+        <td>{{ "%.2f"|format(review.confidence) }}</td>
+        <td><span class="badge {{ review.decision }}">{{ review.decision }}</span></td>
+        <td>{{ review.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td class="actions">
+          <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Edit</a>
+          <a href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">
+  <p>No reviews yet.</p>
+  <a class="button" href="{{ url_for('reviews.create_review') }}">Create the first review</a>
+</div>
+{% endif %}
+{% endblock %}
