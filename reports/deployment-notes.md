@@ -35,9 +35,7 @@ The free web service spins down after about 15 minutes without outside traffic. 
 ## Cleanup and Cost Awareness
 
 - Plan used: Free (web service) and Free (PostgreSQL). Expected cost: 0.
-- TODO choose one:
-  - [ ] Removed: deleted the web service and the database in the Render dashboard on TODO date. Confirmed both are gone from the dashboard.
-  - [ ] Intentionally retained until TODO date for grading. They will be deleted after that. The free database expires on TODO date in any case.
+- [x] Intentionally retained for grading so the public URL can be checked. Both the web service and the database will be deleted from the Render dashboard once grading is finished, and no later than 26 Nov 2026. The free database was created on 27 Oct 2026 and expires on 26 Nov 2026 in any case.
 
 ## Reflection
 
