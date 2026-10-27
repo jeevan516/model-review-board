@@ -63,6 +63,40 @@ def test_dashboard_filters_by_decision(client, review):
     assert "CASE-100" in client.get("/?status=bogus").get_data(as_text=True)
 
 
+def test_dashboard_search(client, review):
+    db.session.add(
+        Review(
+            case_reference="Priya Sharma",
+            prediction="shortlist for Data Analyst",
+            confidence=0.8,
+            input_summary="Applicant for Data Analyst; 4 yrs experience, skills: SQL, Excel.",
+            decision="approved",
+        )
+    )
+    db.session.commit()
+
+    # Matches name, prediction and summary, ignoring case.
+    for term in ("priya", "DATA ANALYST", "sql"):
+        html = client.get(f"/?q={term}").get_data(as_text=True)
+        assert "Priya Sharma" in html
+        assert "CASE-100" not in html
+
+    # Search combines with the decision filter.
+    assert "No reviews match" in client.get("/?q=priya&status=rejected").get_data(as_text=True)
+    # % is matched literally, not as a wildcard.
+    assert "No reviews match" in client.get("/?q=%25").get_data(as_text=True)
+
+
+def test_avatar_initials(client, review):
+    db.session.add(
+        Review(case_reference="Priya Sharma", prediction="x", confidence=0.5, input_summary="x")
+    )
+    db.session.commit()
+    html = client.get("/").get_data(as_text=True)
+    assert ">PS</span>" in html
+    assert ">C1</span>" in html  # CASE-100
+
+
 # Create and validation
 
 

@@ -4,8 +4,8 @@
 
 ## Public URL
 
-- Web service: TODO `https://model-review-board-XXXX.onrender.com`
-- Health check: TODO `https://model-review-board-XXXX.onrender.com/health` returned `{"database": "ok", "status": "ok"}` with HTTP 200.
+- Web service: `https://model-review-board.onrender.com`
+- Health check: `https://model-review-board.onrender.com/health` returned `{"database": "ok", "status": "ok"}` with HTTP 200.
 
 ## Deployed Configuration
 
@@ -16,23 +16,21 @@
 
 ## Persistence Evidence
 
-1. TODO: Created review `TODO case reference` through the public URL at TODO time (UTC).
-2. TODO: Triggered **Manual Deploy → Restart service** (or **Deploy latest commit**) at TODO time.
-3. TODO: After the restart, the review was still on the dashboard with the same decision and notes.
-
-Screenshots or log lines (optional): TODO
+1. Created review `RENDER-TEST-001` through the public URL at 17:10 on 27 Oct 2026 (UTC).
+2. Triggered **Manual Deploy → Restart service** at 17:12 on 27 Oct 2026 (UTC).
+3. After the restart, the review was still on the dashboard at `/reviews/1` with the same decision (Pending), prediction (NA), confidence (1.00) and created time (27 Oct 2026, 17:10).
 
 ## Service Log Evidence
 
 One successful request from the Render **Logs** tab (gunicorn access log):
 
 ```
-TODO paste one line, e.g.  ... "GET /health HTTP/1.1" 200 ...
+10.216.27.223 - - [27/Oct/2026:17:04:52 +0000] "GET /health HTTP/1.1" 200 32 "-" "Render/1.0"
 ```
 
 ## Observed Limitation
 
-TODO: describe one limitation you saw. For example: the free web service spins down after about 15 minutes without traffic, so the first request afterwards took about TODO seconds while it started again. Free Render PostgreSQL databases also expire 30 days after creation unless upgraded.
+The free web service spins down after about 15 minutes without outside traffic. The last outside request was around 17:20 UTC, and at 17:35:54 UTC the logs showed gunicorn being stopped (`Handling signal: term`, then `Shutting down: Master`). Render's own `/health` checks every 5 seconds did not keep it awake. The next visit woke the service, and the dashboard loaded in just under 5 seconds, quicker than the 30–60 seconds Render warns about, but still a noticeable wait compared with an always-on service. Free Render PostgreSQL databases also expire 30 days after creation unless upgraded.
 
 ## Cleanup and Cost Awareness
 

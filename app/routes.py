@@ -1,7 +1,7 @@
 """Routes for the dashboard, review forms and health check."""
 
 from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
-from sqlalchemy import func, text
+from sqlalchemy import func, or_, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import db
@@ -9,6 +9,21 @@ from .models import DECISIONS, Review
 from .validation import validate_review
 
 bp = Blueprint("reviews", __name__)
+
+AVATAR_TONES = 6
+
+
+@bp.app_template_filter("initials")
+def initials(name: str) -> str:
+    """Up to two initials for an avatar, e.g. 'Priya Sharma' -> 'PS'."""
+    parts = name.replace("-", " ").split()
+    return "".join(part[0] for part in parts[:2]).upper() or "?"
+
+
+@bp.app_template_filter("avatar_tone")
+def avatar_tone(name: str) -> int:
+    """Pick a stable avatar colour so the same name always looks the same."""
+    return sum(map(ord, name)) % AVATAR_TONES
 
 
 def status_totals() -> dict[str, int]:
@@ -28,13 +43,23 @@ def dashboard():
     status = request.args.get("status")
     if status not in DECISIONS:
         status = None
+    # ?q=... searches the case reference, prediction and input summary.
+    q = request.args.get("q", "").strip()
 
     query = db.select(Review).order_by(Review.created_at.desc(), Review.id.desc())
     if status:
         query = query.where(Review.decision == status)
+    if q:
+        query = query.where(
+            or_(
+                Review.case_reference.icontains(q, autoescape=True),
+                Review.prediction.icontains(q, autoescape=True),
+                Review.input_summary.icontains(q, autoescape=True),
+            )
+        )
     reviews = db.session.scalars(query).all()
     return render_template(
-        "dashboard.html", reviews=reviews, totals=status_totals(), status=status
+        "dashboard.html", reviews=reviews, totals=status_totals(), status=status, q=q
     )
 
 

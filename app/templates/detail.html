@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_icons.html" import icon, status_badge, confidence_meter %}
+{% from "_icons.html" import icon, status_badge, confidence_meter, avatar %}
 
 {% block title %}{{ review.case_reference }} · Model Review Board{% endblock %}
 
@@ -7,9 +7,12 @@
 <a class="back-link" href="{{ url_for('reviews.dashboard') }}">{{ icon("back", 16) }}Back to all reviews</a>
 
 <div class="page-head">
-  <div>
-    <p class="eyebrow">Case</p>
-    <h1>{{ review.case_reference }} {{ status_badge(review.decision) }}</h1>
+  <div class="title-with-avatar">
+    {{ avatar(review.case_reference, large=true) }}
+    <div>
+      <p class="eyebrow">Case</p>
+      <h1>{{ review.case_reference }} {{ status_badge(review.decision) }}</h1>
+    </div>
   </div>
   <div class="head-actions">
     <a class="button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">{{ icon("edit", 16) }}Edit decision</a>

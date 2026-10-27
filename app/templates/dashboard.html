@@ -1,12 +1,17 @@
 {% extends "base.html" %}
-{% from "_icons.html" import icon, status_badge, confidence_meter %}
+{% from "_icons.html" import icon, status_badge, confidence_meter, avatar %}
 
 {% block content %}
-<div class="page-head">
+<div class="page-head hero">
   <div>
+    <p class="eyebrow">Review queue</p>
     <h1>Reviews</h1>
     <p class="subtle">Check model predictions before they are passed on to other teams.</p>
   </div>
+  {% if totals.pending %}
+  <a class="button ghost" href="{{ url_for('reviews.dashboard', status='pending') }}">
+    {{ icon("pending", 16) }}{{ totals.pending }} waiting for a decision</a>
+  {% endif %}
 </div>
 
 <section class="stats" aria-label="Status totals">
@@ -20,6 +25,9 @@
     <span class="stat-icon">{{ icon(decision, 20) }}</span>
     <span class="stat-label">{{ decision|capitalize }}</span>
     <span class="stat-value" id="total-{{ decision }}">{{ totals[decision] }}</span>
+    {% if totals.total %}
+    <span class="stat-share">{{ "%.0f"|format(totals[decision] / totals.total * 100) }}%</span>
+    {% endif %}
   </div>
   {% endfor %}
 </section>
@@ -54,14 +62,27 @@
   <div class="card-head">
     <h2 id="list-title" class="visually-hidden">Review list</h2>
     <nav class="tabs" aria-label="Filter by decision">
-      <a href="{{ url_for('reviews.dashboard') }}" {% if not status %}aria-current="page"{% endif %}>
+      <a href="{{ url_for('reviews.dashboard', q=q or none) }}" {% if not status %}aria-current="page"{% endif %}>
         All <span class="tab-count">{{ totals.total }}</span></a>
       {% for decision in ("pending", "approved", "rejected") %}
-      <a href="{{ url_for('reviews.dashboard', status=decision) }}" {% if status == decision %}aria-current="page"{% endif %}>
+      <a href="{{ url_for('reviews.dashboard', status=decision, q=q or none) }}" {% if status == decision %}aria-current="page"{% endif %}>
         {{ decision|capitalize }} <span class="tab-count">{{ totals[decision] }}</span></a>
       {% endfor %}
     </nav>
+    <form class="search" method="get" action="{{ url_for('reviews.dashboard') }}" role="search">
+      {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+      <label for="q" class="visually-hidden">Search reviews</label>
+      {{ icon("search", 16, "search-icon") }}
+      <input id="q" name="q" type="search" value="{{ q }}" placeholder="Search name, job or skill">
+      {% if q %}
+      <a class="search-clear" href="{{ url_for('reviews.dashboard', status=status) }}" title="Clear search">
+        {{ icon("close", 14) }}<span class="visually-hidden">Clear search</span></a>
+      {% endif %}
+    </form>
   </div>
+  {% if q %}
+  <p class="result-count">{{ reviews|length }} result{{ "s" if reviews|length != 1 }} for <strong>“{{ q }}”</strong></p>
+  {% endif %}
 
   {% if reviews %}
   <div class="table-wrap">
@@ -80,8 +101,13 @@
         {% for review in reviews %}
         <tr>
           <td>
-            <a class="case-link" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">{{ review.case_reference }}</a>
-            <span class="case-summary">{{ review.input_summary|truncate(60) }}</span>
+            <div class="case-cell">
+              {{ avatar(review.case_reference) }}
+              <div class="case-text">
+                <a class="case-link" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">{{ review.case_reference }}</a>
+                <span class="case-summary">{{ review.input_summary|truncate(60) }}</span>
+              </div>
+            </div>
           </td>
           <td>{{ review.prediction }}</td>
           <td>{{ confidence_meter(review.confidence) }}</td>
@@ -97,6 +123,12 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
+  {% elif q %}
+  <div class="empty">
+    <p class="empty-title">No reviews match “{{ q }}”</p>
+    <p class="subtle">Try a different name, job or skill.</p>
+    <a href="{{ url_for('reviews.dashboard', status=status) }}">Clear search</a>
   </div>
   {% elif status %}
   <div class="empty">
