@@ -1,0 +1,37 @@
+# Model Review Board with PostgreSQL, like the Render deployment.
+#   docker compose up -d --build     ->  http://localhost:5050
+#   docker compose push app          (sends the image to the local registry for Portainer)
+# Port 5050 on the Mac, because 5000 is used by the local Docker registry.
+name: model-review-board
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: model_reviews
+      POSTGRES_PASSWORD: model_reviews
+      POSTGRES_DB: model_reviews
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U model_reviews -d model_reviews"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    image: ${REGISTRY:-localhost:5000}/model-review-board:${TAG:-1.0}
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://model_reviews:model_reviews@db:5432/model_reviews
+      SECRET_KEY: ${SECRET_KEY:-local-docker-secret-change-me}
+    ports:
+      - "5050:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
