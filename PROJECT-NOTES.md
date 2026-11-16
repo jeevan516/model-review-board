@@ -1,6 +1,6 @@
 # Model Review Board: project notes
 
-_Last updated: 15 Nov 2026_
+_Last updated: 16 Nov 2026_
 
 ## Project
 **Model Review Board.** A small Flask web app where an ML team reviews model predictions
@@ -40,3 +40,4 @@ SQLite locally, PostgreSQL in production.
 ## Update log
 - 27 Oct 2026: deployed to Render, persistence and log evidence recorded.
 - 15 Nov 2026: Dockerfile, compose file and Portainer stack added; PR #1.
+- 16 Nov 2026: presentation deck added: presentation/model-review-board.pptx (9 slides).
