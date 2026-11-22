@@ -1,6 +1,6 @@
 # Model Review Board: project notes
 
-_Last updated: 16 Nov 2026_
+_Last updated: 22 Nov 2026_
 
 ## Project
 **Model Review Board.** A small Flask web app where an ML team reviews model predictions
@@ -21,11 +21,17 @@ SQLite locally, PostgreSQL in production.
    connection string injected by Render (no secret in the repo).
 5. **Docker:** `Dockerfile` + `docker-compose.yaml` (app + Postgres 17, same start command
    as Render), and a Portainer stack on http://localhost:5050.
+6. **UI restyle (JD design system):** the templates and `style.css` now sit on the shared
+   `jd.css` (copied to `app/static/`): navy/amber/teal tokens, light and dark themes, skip link,
+   visible focus, status badges with icon + word, form help text, table that turns into cards on
+   phones (no sideways scroll at 390 px). Calm motion: tiles lift on hover, the decision bar and
+   confidence meters fill in, stat numbers count up (`app/static/app.js`); all of it is off under
+   reduced motion. Routes, form fields and validation are unchanged.
 
 ## Results
 | Check | Result |
 |---|---|
-| Test suite | **29 / 29 pass** |
+| Test suite | **29 / 29 pass** (re-run after the UI restyle, 22 Nov 2026) |
 | Render deployment | `/health` returned `{"database": "ok", "status": "ok"}` (HTTP 200) |
 | Persistence | review `RENDER-TEST-001` survived a service restart (27 Oct 2026) |
 | Free-plan limit | spins down after ~15 min idle; woke in just under 5 s |
@@ -41,3 +47,4 @@ SQLite locally, PostgreSQL in production.
 - 27 Oct 2026: deployed to Render, persistence and log evidence recorded.
 - 15 Nov 2026: Dockerfile, compose file and Portainer stack added; PR #1.
 - 16 Nov 2026: presentation deck added: presentation/model-review-board.pptx (9 slides).
+- 22 Nov 2026: UI restyled onto the JD design system (jd.css, light/dark, motion); 29 / 29 tests pass; branch `ui/jd-design-system`.

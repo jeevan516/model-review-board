@@ -4,14 +4,14 @@
 {% block title %}Delete {{ review.case_reference }} · Model Review Board{% endblock %}
 
 {% block content %}
-<section class="card confirm-card">
+<section class="jd-card confirm-card" aria-labelledby="confirm-title">
   <span class="confirm-icon">{{ icon("trash", 28) }}</span>
-  <h1>Delete review {{ review.case_reference }}?</h1>
+  <h1 id="confirm-title">Delete review {{ review.case_reference }}?</h1>
   <p>This permanently removes the review, its decision {{ status_badge(review.decision) }} and any reviewer notes. It cannot be undone.</p>
 
   <form method="post" action="{{ url_for('reviews.delete_review', review_id=review.id) }}" class="form-actions">
-    <button type="submit" class="button danger">{{ icon("trash", 16) }}Delete review</button>
-    <a class="button ghost" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">Cancel</a>
+    <button type="submit" class="jd-btn jd-btn--danger">{{ icon("trash", 16) }}Delete review</button>
+    <a class="jd-btn jd-btn--secondary" href="{{ url_for('reviews.review_detail', review_id=review.id) }}">Cancel</a>
   </form>
 </section>
 {% endblock %}

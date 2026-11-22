@@ -34,7 +34,8 @@
 
 {# Status pill: icon + label, so state is never shown by color alone. #}
 {% macro status_badge(decision) -%}
-<span class="badge" data-status="{{ decision }}">{{ icon(decision, 14) }}{{ decision|capitalize }}</span>
+{%- set tone = {"pending": "warning", "approved": "success", "rejected": "danger"}.get(decision, "") -%}
+<span class="jd-badge{{ " jd-badge--" ~ tone if tone }} badge" data-status="{{ decision }}">{{ icon(decision, 14) }}{{ decision|capitalize }}</span>
 {%- endmacro %}
 
 {# Initials circle; the tone comes from the name so it stays the same on every page. #}

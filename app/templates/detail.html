@@ -10,19 +10,19 @@
   <div class="title-with-avatar">
     {{ avatar(review.case_reference, large=true) }}
     <div>
-      <p class="eyebrow">Case</p>
+      <p class="jd-eyebrow">Case</p>
       <h1>{{ review.case_reference }} {{ status_badge(review.decision) }}</h1>
     </div>
   </div>
   <div class="head-actions">
-    <a class="button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">{{ icon("edit", 16) }}Edit decision</a>
-    <a class="button ghost danger" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">{{ icon("trash", 16) }}Delete</a>
+    <a class="jd-btn jd-btn--primary" href="{{ url_for('reviews.edit_review', review_id=review.id) }}">{{ icon("edit", 16) }}Edit decision</a>
+    <a class="jd-btn jd-btn--secondary danger-text" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}">{{ icon("trash", 16) }}Delete</a>
   </div>
 </div>
 
 <div class="detail-grid">
-  <section class="card">
-    <h2>Model output</h2>
+  <section class="jd-card">
+    <h2 class="jd-card__title">Model output</h2>
     <dl class="details">
       <dt>Prediction</dt>
       <dd class="big">{{ review.prediction }}</dd>
@@ -35,27 +35,27 @@
     </dl>
   </section>
 
-  <section class="card">
-    <h2>Review</h2>
+  <section class="jd-card">
+    <h2 class="jd-card__title">Review</h2>
     <dl class="details">
       <dt>Decision</dt>
       <dd>{{ status_badge(review.decision) }}</dd>
 
       <dt>Created</dt>
-      <dd>{{ review.created_at.strftime("%d %b %Y, %H:%M") }}</dd>
+      <dd class="num">{{ review.created_at.strftime("%d %b %Y, %H:%M") }}</dd>
 
       <dt>Last updated</dt>
-      <dd>{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</dd>
+      <dd class="num">{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</dd>
     </dl>
   </section>
 </div>
 
-<section class="card notes-card">
-  <h2>{{ icon("notes", 18) }}Reviewer notes</h2>
+<section class="jd-card notes-card">
+  <h2 class="jd-card__title">{{ icon("notes", 18) }}Reviewer notes</h2>
   {% if review.notes %}
   <blockquote class="notes">{{ review.notes }}</blockquote>
   {% else %}
-  <p class="subtle">No notes yet. <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Add a note</a> so the next reviewer knows what you checked.</p>
+  <p class="jd-muted">No notes yet. <a href="{{ url_for('reviews.edit_review', review_id=review.id) }}">Add a note</a> so the next reviewer knows what you checked.</p>
   {% endif %}
 </section>
 {% endblock %}
