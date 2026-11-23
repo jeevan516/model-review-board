@@ -2,41 +2,45 @@
 {% from "_icons.html" import icon, status_badge, confidence_meter, avatar %}
 
 {% block content %}
-<div class="page-head hero">
+<div class="page-head hero jd-band--aurora">
   <div>
-    <p class="eyebrow">Review queue</p>
-    <h1>Reviews</h1>
-    <p class="subtle">Check model predictions before they are passed on to other teams.</p>
+    <p class="hero-cat"><span class="jd-dot" aria-hidden="true"></span>APIs &amp; cloud · review queue</p>
+    <h1>Model <span class="jd-text-aurora">reviews</span></h1>
+    <p class="lead">An ML team checks each model prediction here before another department uses it: the case, the predicted label and its confidence, then a reviewer approves or rejects it with notes.</p>
+    <p class="lead-2">Flask app with one relational table: SQLite locally, PostgreSQL on Render and in Docker.</p>
   </div>
   {% if totals.pending %}
-  <a class="button ghost" href="{{ url_for('reviews.dashboard', status='pending') }}">
+  <a class="jd-btn jd-btn--secondary" href="{{ url_for('reviews.dashboard', status='pending') }}">
     {{ icon("pending", 16) }}{{ totals.pending }} waiting for a decision</a>
   {% endif %}
 </div>
 
 <section class="stats" aria-label="Status totals">
-  <div class="stat" data-status="total">
-    <span class="stat-icon">{{ icon("total", 20) }}</span>
-    <span class="stat-label">Total reviews</span>
-    <span class="stat-value" id="total-total">{{ totals.total }}</span>
+  <div class="jd-card jd-card--interactive jd-stat stat" data-status="total">
+    <span class="stat-top">
+      <span class="stat-icon">{{ icon("total", 18) }}</span>
+      <span class="jd-stat__label">Total reviews</span>
+    </span>
+    <span class="jd-stat__value" id="total-total">{{ totals.total }}</span>
+    <span class="jd-stat__note">in the queue</span>
   </div>
   {% for decision in ("pending", "approved", "rejected") %}
-  <div class="stat" data-status="{{ decision }}">
-    <span class="stat-icon">{{ icon(decision, 20) }}</span>
-    <span class="stat-label">{{ decision|capitalize }}</span>
-    <span class="stat-value" id="total-{{ decision }}">{{ totals[decision] }}</span>
-    {% if totals.total %}
-    <span class="stat-share">{{ "%.0f"|format(totals[decision] / totals.total * 100) }}%</span>
-    {% endif %}
+  <div class="jd-card jd-card--interactive jd-stat stat" data-status="{{ decision }}">
+    <span class="stat-top">
+      <span class="stat-icon">{{ icon(decision, 18) }}</span>
+      <span class="jd-stat__label">{{ decision|capitalize }}</span>
+    </span>
+    <span class="jd-stat__value" id="total-{{ decision }}">{{ totals[decision] }}</span>
+    <span class="jd-stat__note">{% if totals.total %}{{ "%.0f"|format(totals[decision] / totals.total * 100) }}% of all reviews{% else %}no reviews yet{% endif %}</span>
   </div>
   {% endfor %}
 </section>
 
 {% if totals.total %}
-<section class="card distribution" aria-labelledby="distribution-title">
+<section class="jd-card distribution" aria-labelledby="distribution-title">
   <div class="card-head">
     <h2 id="distribution-title">Decision progress</h2>
-    <span class="subtle">{{ "%.0f"|format((totals.approved + totals.rejected) / totals.total * 100) }}% decided</span>
+    <span class="jd-subtle">{{ "%.0f"|format((totals.approved + totals.rejected) / totals.total * 100) }}% decided</span>
   </div>
   <div class="stack" role="img"
        aria-label="{% for d in ('pending', 'approved', 'rejected') %}{{ totals[d] }} {{ d }}{{ ', ' if not loop.last }}{% endfor %}">
@@ -51,42 +55,42 @@
     <li data-status="{{ decision }}">
       <span class="legend-swatch"></span>{{ decision|capitalize }}
       <strong>{{ totals[decision] }}</strong>
-      <span class="subtle">{{ "%.0f"|format(totals[decision] / totals.total * 100) }}%</span>
+      <span class="jd-subtle">{{ "%.0f"|format(totals[decision] / totals.total * 100) }}%</span>
     </li>
     {% endfor %}
   </ul>
 </section>
 {% endif %}
 
-<section class="card list-card" aria-labelledby="list-title">
-  <div class="card-head">
-    <h2 id="list-title" class="visually-hidden">Review list</h2>
-    <nav class="tabs" aria-label="Filter by decision">
-      <a href="{{ url_for('reviews.dashboard', q=q or none) }}" {% if not status %}aria-current="page"{% endif %}>
+<section class="list-section" aria-labelledby="list-title">
+  <h2 id="list-title" class="jd-visually-hidden">Review list</h2>
+  <div class="toolbar">
+    <nav class="jd-tabs filter-tabs" aria-label="Filter by decision">
+      <a class="jd-tab" href="{{ url_for('reviews.dashboard', q=q or none) }}" {% if not status %}aria-current="page"{% endif %}>
         All <span class="tab-count">{{ totals.total }}</span></a>
       {% for decision in ("pending", "approved", "rejected") %}
-      <a href="{{ url_for('reviews.dashboard', status=decision, q=q or none) }}" {% if status == decision %}aria-current="page"{% endif %}>
+      <a class="jd-tab" href="{{ url_for('reviews.dashboard', status=decision, q=q or none) }}" {% if status == decision %}aria-current="page"{% endif %}>
         {{ decision|capitalize }} <span class="tab-count">{{ totals[decision] }}</span></a>
       {% endfor %}
     </nav>
     <form class="search" method="get" action="{{ url_for('reviews.dashboard') }}" role="search">
       {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
-      <label for="q" class="visually-hidden">Search reviews</label>
+      <label for="q" class="jd-visually-hidden">Search reviews</label>
       {{ icon("search", 16, "search-icon") }}
-      <input id="q" name="q" type="search" value="{{ q }}" placeholder="Search name, job or skill">
+      <input id="q" name="q" type="search" class="jd-input" value="{{ q }}" placeholder="Search name, job or skill">
       {% if q %}
       <a class="search-clear" href="{{ url_for('reviews.dashboard', status=status) }}" title="Clear search">
-        {{ icon("close", 14) }}<span class="visually-hidden">Clear search</span></a>
+        {{ icon("close", 14) }}<span class="jd-visually-hidden">Clear search</span></a>
       {% endif %}
     </form>
   </div>
   {% if q %}
-  <p class="result-count">{{ reviews|length }} result{{ "s" if reviews|length != 1 }} for <strong>“{{ q }}”</strong></p>
+  <p class="result-count" role="status">{{ reviews|length }} result{{ "s" if reviews|length != 1 }} for <strong>“{{ q }}”</strong></p>
   {% endif %}
 
   {% if reviews %}
-  <div class="table-wrap">
-    <table>
+  <div class="jd-table-wrap">
+    <table class="jd-table review-table">
       <thead>
         <tr>
           <th scope="col">Case</th>
@@ -94,7 +98,7 @@
           <th scope="col">Confidence</th>
           <th scope="col">Decision</th>
           <th scope="col">Updated</th>
-          <th scope="col"><span class="visually-hidden">Actions</span></th>
+          <th scope="col"><span class="jd-visually-hidden">Actions</span></th>
         </tr>
       </thead>
       <tbody>
@@ -112,12 +116,12 @@
           <td>{{ review.prediction }}</td>
           <td>{{ confidence_meter(review.confidence) }}</td>
           <td>{{ status_badge(review.decision) }}</td>
-          <td class="subtle nowrap">{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</td>
+          <td class="jd-subtle nowrap">{{ review.updated_at.strftime("%d %b %Y, %H:%M") }}</td>
           <td class="row-actions">
-            <a class="icon-button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}"
-               title="Edit {{ review.case_reference }}">{{ icon("edit", 16) }}<span class="visually-hidden">Edit {{ review.case_reference }}</span></a>
-            <a class="icon-button danger" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}"
-               title="Delete {{ review.case_reference }}">{{ icon("trash", 16) }}<span class="visually-hidden">Delete {{ review.case_reference }}</span></a>
+            <a class="jd-btn jd-btn--ghost icon-button" href="{{ url_for('reviews.edit_review', review_id=review.id) }}"
+               title="Edit {{ review.case_reference }}">{{ icon("edit", 16) }}<span class="jd-visually-hidden">Edit {{ review.case_reference }}</span></a>
+            <a class="jd-btn jd-btn--ghost icon-button danger" href="{{ url_for('reviews.confirm_delete', review_id=review.id) }}"
+               title="Delete {{ review.case_reference }}">{{ icon("trash", 16) }}<span class="jd-visually-hidden">Delete {{ review.case_reference }}</span></a>
           </td>
         </tr>
         {% endfor %}
@@ -125,19 +129,19 @@
     </table>
   </div>
   {% elif q %}
-  <div class="empty">
+  <div class="jd-empty">
     <p class="empty-title">No reviews match “{{ q }}”</p>
-    <p class="subtle">Try a different name, job or skill.</p>
+    <p class="jd-muted">Try a different name, job or skill.</p>
     <a href="{{ url_for('reviews.dashboard', status=status) }}">Clear search</a>
   </div>
   {% elif status %}
-  <div class="empty">
+  <div class="jd-empty">
     <p class="empty-title">No {{ status }} reviews</p>
-    <p class="subtle">Nothing has this decision right now.</p>
+    <p class="jd-muted">Nothing has this decision right now.</p>
     <a href="{{ url_for('reviews.dashboard') }}">Show all reviews</a>
   </div>
   {% else %}
-  <div class="empty">
+  <div class="jd-empty">
     <svg class="empty-art" width="160" height="120" viewBox="0 0 160 120" aria-hidden="true">
       <rect x="38" y="14" width="84" height="100" rx="10" class="art-paper"/>
       <rect x="62" y="6" width="36" height="16" rx="5" class="art-clip"/>
@@ -151,8 +155,8 @@
       <path d="M118 84v16M110 92h16" class="art-plus"/>
     </svg>
     <p class="empty-title">No reviews yet</p>
-    <p class="subtle">Add the first model prediction to start the review queue.</p>
-    <a class="button" href="{{ url_for('reviews.create_review') }}">{{ icon("plus", 16) }}Create the first review</a>
+    <p class="jd-muted">Add the first model prediction to start the review queue.</p>
+    <a class="jd-btn jd-btn--primary" href="{{ url_for('reviews.create_review') }}">{{ icon("plus", 16) }}Create the first review</a>
   </div>
   {% endif %}
 </section>

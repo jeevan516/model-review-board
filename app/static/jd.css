@@ -1,0 +1,337 @@
+/* ==========================================================================================
+   JD design system · jd.css · v1.1 (23 Nov 2026)
+   One file for every Jeevan D site and project UI: tokens, base styles, components.
+   Copy it into a project (static/jd.css) and link it before the project's own CSS.
+   Light and dark: follows the OS, and <html data-theme="light|dark"> overrides it both ways.
+   Contrast: every text token >= 4.5:1 (WCAG AA) on bg, surface and surface-2, in both modes.
+   v1.1 adds the vivid accent layer: category colours (--jd-cat-*), the aurora gradient, .jd-cat--*,
+   .jd-card--accent, .jd-band--aurora, .jd-text-aurora, .jd-badge--cat, .jd-reveal.
+   Rules and usage: DESIGN.md next to this file.
+   ========================================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ---- type ---- */
+  --jd-font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --jd-font-display: "Source Serif 4", Cambria, Georgia, "Times New Roman", serif;
+  --jd-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --jd-text-xs: 0.75rem;     /* 12 · labels, meta */
+  --jd-text-sm: 0.875rem;    /* 14 · secondary text, table cells */
+  --jd-text-base: 1rem;      /* 16 · body */
+  --jd-text-lg: 1.125rem;    /* 18 · lead text */
+  --jd-text-xl: 1.25rem;     /* 20 · card titles */
+  --jd-text-2xl: 1.5rem;     /* 24 · section titles (apps) */
+  --jd-text-3xl: 1.875rem;   /* 30 · page titles (apps) */
+  --jd-text-4xl: clamp(2rem, 4vw, 2.5rem);          /* section titles (sites) */
+  --jd-text-5xl: clamp(2.5rem, 6vw, 3.75rem);       /* hero */
+  --jd-leading-tight: 1.15;
+  --jd-leading-snug: 1.35;
+  --jd-leading-normal: 1.6;
+  --jd-tracking-caps: 0.08em;
+
+  /* ---- space (4 px grid) ---- */
+  --jd-space-1: 0.25rem; --jd-space-2: 0.5rem; --jd-space-3: 0.75rem; --jd-space-4: 1rem;
+  --jd-space-5: 1.25rem; --jd-space-6: 1.5rem; --jd-space-8: 2rem; --jd-space-10: 2.5rem;
+  --jd-space-12: 3rem; --jd-space-16: 4rem; --jd-space-24: 6rem;
+  --jd-container: 72rem;     /* 1152 px content width */
+  --jd-gutter: clamp(1rem, 4vw, 2rem);
+
+  /* ---- shape, elevation, motion ---- */
+  --jd-radius-sm: 6px; --jd-radius-md: 10px; --jd-radius-lg: 14px; --jd-radius-xl: 20px; --jd-radius-pill: 999px;
+  --jd-shadow-1: 0 1px 2px rgb(15 27 45 / 0.06), 0 1px 3px rgb(15 27 45 / 0.08);
+  --jd-shadow-2: 0 4px 12px rgb(15 27 45 / 0.08), 0 2px 4px rgb(15 27 45 / 0.06);
+  --jd-shadow-3: 0 16px 40px rgb(15 27 45 / 0.14);
+  --jd-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --jd-dur-fast: 120ms; --jd-dur: 200ms; --jd-dur-slow: 320ms;
+
+  /* ---- colour: light ---- */
+  --jd-bg: #f6f8fa;            /* page */
+  --jd-surface: #ffffff;       /* cards, panels */
+  --jd-surface-2: #eef2f5;     /* insets, table headers, hover */
+  --jd-border: #d4dbe2;
+  --jd-border-strong: #b6c1cc;
+  --jd-text: #0f1b2d;          /* 15:1+ */
+  --jd-text-muted: #4b5b6b;    /* 6.2:1+ */
+  --jd-text-subtle: #5d6c7b;   /* 4.8:1+  meta only */
+  --jd-ink: #0f1b2d;           /* brand navy */
+  --jd-ink-2: #1f3a4d;         /* brand slate */
+  --jd-accent: #f2a541;        /* brand amber: fills, highlights (not for text on light) */
+  --jd-on-accent: #0f1b2d;     /* text on accent fills: 8.4:1 */
+  --jd-accent-text: #9a5400;   /* amber for text and links on light: 5.1:1+ */
+  --jd-accent-soft: #fff4e3;
+  --jd-teal: #0b6e6d;          /* secondary brand */
+  --jd-teal-soft: #e3f4f3;
+  --jd-link: var(--jd-accent-text);
+  --jd-success: #17733d; --jd-success-soft: #e6f4ec;
+  --jd-warning: #9a5b00; --jd-warning-soft: #fdf1dc;
+  --jd-danger: #c0352b;  --jd-danger-soft: #fbe9e7;
+  --jd-info: #1d64ad;    --jd-info-soft: #e5effa;
+  --jd-focus: 0 0 0 3px var(--jd-bg), 0 0 0 5px var(--jd-accent-text);
+
+  /* ---- data viz (dataviz skill palette, validated on #ffffff: all checks pass;
+         slots 3, 4, 5 are < 3:1, so charts using them need direct labels or a table view) ---- */
+  --jd-chart-surface: var(--jd-surface);
+  --jd-series-1: #2a78d6; --jd-series-2: #eb6834; --jd-series-3: #1baf7a; --jd-series-4: #eda100;
+  --jd-series-5: #e87ba4; --jd-series-6: #008300; --jd-series-7: #6250d6; --jd-series-8: #e34948;
+  --jd-grid: #e4e9ee; --jd-axis: #b6c1cc;
+  --jd-status-good: #0ca30c; --jd-status-warning: #fab219; --jd-status-serious: #ec835a; --jd-status-critical: #d03b3b;
+
+  /* ---- accent layer (v1.1): category colours + aurora. Shared with the portfolio; keep these exact values.
+         --jd-cat-* are FILLS (bars, borders, glows, dots, gradients); text uses --jd-cat-*-text (AA on every surface).
+         Never use them for chart series: data keeps --jd-series-*. ---- */
+  --jd-cat-py: #38bdf8;    --jd-cat-py-text: #0369a1;     /* Python foundations · sky    5.3:1+ */
+  --jd-cat-api: #a78bfa;   --jd-cat-api-text: #6d28d9;    /* APIs & cloud · violet       6.3:1+ */
+  --jd-cat-data: #2dd4bf;  --jd-cat-data-text: #0f766e;   /* Data engineering · teal     4.9:1+ */
+  --jd-cat-ml: #fb7185;    --jd-cat-ml-text: #be123c;     /* Machine learning · coral    5.6:1+ */
+  --jd-cat-ops: #f2a541;   --jd-cat-ops-text: #9a5400;    /* MLOps & deployment · amber  5.1:1+ */
+  --jd-cat-tools: #f472b6; --jd-cat-tools-text: #be185d;  /* Tools & agents · pink       5.4:1+ */
+  --jd-on-cat: #0f1b2d;                                   /* text on any vivid fill: 6.3:1+ */
+  --jd-aurora: linear-gradient(135deg, #f2a541 0%, #fb7185 35%, #a78bfa 70%, #38bdf8 100%);
+  --jd-aurora-text: linear-gradient(135deg, #9a5400 0%, #be123c 35%, #6d28d9 70%, #0369a1 100%); /* gradient text on light */
+  --jd-band: #0f1b2d;      /* aurora band background: navy in both themes */
+  --jd-on-band: #ffffff; --jd-on-band-muted: #c9d6e2;   /* 17:1, 11.7:1 */
+  --jd-glow-strength: 28%;
+}
+
+/* ---- colour: dark (same names, own steps; validated on #111c2e) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) { color-scheme: dark;
+    --jd-bg: #0b1320; --jd-surface: #111c2e; --jd-surface-2: #172539; --jd-border: #2a3d55; --jd-border-strong: #3a5070;
+    --jd-text: #e6edf3; --jd-text-muted: #a3b3c3; --jd-text-subtle: #8394a6;
+    --jd-ink: #e6edf3; --jd-ink-2: #c9d6e2;
+    --jd-accent: #f2a541; --jd-on-accent: #0f1b2d; --jd-accent-text: #f5b45e; --jd-accent-soft: #2a2414;
+    --jd-teal: #3cc0b4; --jd-teal-soft: #10302f;
+    --jd-success: #4cc77f; --jd-success-soft: #10301f; --jd-warning: #f2b54c; --jd-warning-soft: #33280f;
+    --jd-danger: #f27b7b; --jd-danger-soft: #3a1717; --jd-info: #6aaef2; --jd-info-soft: #13283f;
+    --jd-shadow-1: 0 1px 2px rgb(0 0 0 / 0.4); --jd-shadow-2: 0 4px 14px rgb(0 0 0 / 0.45); --jd-shadow-3: 0 16px 40px rgb(0 0 0 / 0.55);
+    --jd-series-1: #3987e5; --jd-series-2: #d95926; --jd-series-3: #199e70; --jd-series-4: #c98500;
+    --jd-series-5: #d55181; --jd-series-6: #0ca30c; --jd-series-7: #9085e9; --jd-series-8: #e66767;
+    --jd-grid: #1f2f45; --jd-axis: #3a5070;
+    --jd-cat-py-text: #38bdf8; --jd-cat-api-text: #a78bfa; --jd-cat-data-text: #2dd4bf; --jd-cat-ml-text: #fb7185;
+    --jd-cat-ops-text: #f2a541; --jd-cat-tools-text: #f472b6; --jd-aurora-text: var(--jd-aurora); --jd-band: #08101c; --jd-glow-strength: 38%;
+  }
+}
+:root[data-theme="dark"] { color-scheme: dark;
+  --jd-bg: #0b1320; --jd-surface: #111c2e; --jd-surface-2: #172539; --jd-border: #2a3d55; --jd-border-strong: #3a5070;
+  --jd-text: #e6edf3; --jd-text-muted: #a3b3c3; --jd-text-subtle: #8394a6;
+  --jd-ink: #e6edf3; --jd-ink-2: #c9d6e2;
+  --jd-accent: #f2a541; --jd-on-accent: #0f1b2d; --jd-accent-text: #f5b45e; --jd-accent-soft: #2a2414;
+  --jd-teal: #3cc0b4; --jd-teal-soft: #10302f;
+  --jd-success: #4cc77f; --jd-success-soft: #10301f; --jd-warning: #f2b54c; --jd-warning-soft: #33280f;
+  --jd-danger: #f27b7b; --jd-danger-soft: #3a1717; --jd-info: #6aaef2; --jd-info-soft: #13283f;
+  --jd-shadow-1: 0 1px 2px rgb(0 0 0 / 0.4); --jd-shadow-2: 0 4px 14px rgb(0 0 0 / 0.45); --jd-shadow-3: 0 16px 40px rgb(0 0 0 / 0.55);
+  --jd-series-1: #3987e5; --jd-series-2: #d95926; --jd-series-3: #199e70; --jd-series-4: #c98500;
+  --jd-series-5: #d55181; --jd-series-6: #0ca30c; --jd-series-7: #9085e9; --jd-series-8: #e66767;
+  --jd-grid: #1f2f45; --jd-axis: #3a5070;
+  --jd-cat-py-text: #38bdf8; --jd-cat-api-text: #a78bfa; --jd-cat-data-text: #2dd4bf; --jd-cat-ml-text: #fb7185;
+  --jd-cat-ops-text: #f2a541; --jd-cat-tools-text: #f472b6; --jd-aurora-text: var(--jd-aurora); --jd-band: #08101c; --jd-glow-strength: 38%;
+}
+
+/* ==========================================================================================
+   Base
+   ========================================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body.jd, .jd-root {
+  margin: 0; background: var(--jd-bg); color: var(--jd-text);
+  font: 400 var(--jd-text-base) / var(--jd-leading-normal) var(--jd-font-sans);
+  -webkit-font-smoothing: antialiased; overflow-x: clip;
+}
+:where(.jd) :is(h1, h2, h3, h4) { color: var(--jd-text); line-height: var(--jd-leading-tight); margin: 0 0 var(--jd-space-3); text-wrap: balance; }
+:where(.jd) h1 { font: 700 var(--jd-text-3xl) / var(--jd-leading-tight) var(--jd-font-display); letter-spacing: -0.01em; }
+:where(.jd) h2 { font: 700 var(--jd-text-2xl) / var(--jd-leading-tight) var(--jd-font-display); }
+:where(.jd) h3 { font: 650 var(--jd-text-lg) / var(--jd-leading-snug) var(--jd-font-sans); }
+:where(.jd) p { margin: 0 0 var(--jd-space-4); max-width: 70ch; }
+:where(.jd) a { color: var(--jd-link); text-underline-offset: 3px; }
+:where(.jd) a:hover { text-decoration-thickness: 2px; }
+:where(.jd) :is(code, kbd, pre) { font-family: var(--jd-font-mono); font-size: 0.9em; }
+:where(.jd) :focus-visible { outline: none; box-shadow: var(--jd-focus); border-radius: var(--jd-radius-sm); }
+:where(.jd) :is(img, svg) { max-width: 100%; height: auto; }
+:where(.jd) :is(.num, td.num, .jd-stat__value) { font-variant-numeric: tabular-nums; }
+
+.jd-container { width: 100%; max-width: var(--jd-container); margin-inline: auto; padding-inline: var(--jd-gutter); }
+.jd-stack > * + * { margin-top: var(--jd-space-4); }
+.jd-grid { display: grid; gap: var(--jd-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); }
+.jd-row { display: flex; flex-wrap: wrap; gap: var(--jd-space-3); align-items: center; }
+.jd-eyebrow { font: 700 var(--jd-text-xs) / 1 var(--jd-font-sans); letter-spacing: var(--jd-tracking-caps); text-transform: uppercase; color: var(--jd-accent-text); }
+.jd-muted { color: var(--jd-text-muted); }
+.jd-subtle { color: var(--jd-text-subtle); font-size: var(--jd-text-sm); }
+.jd-visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* skip link: first element in <body> */
+.jd-skip { position: absolute; left: var(--jd-space-4); top: -100px; z-index: 100; padding: var(--jd-space-2) var(--jd-space-4);
+  background: var(--jd-accent); color: var(--jd-on-accent); border-radius: var(--jd-radius-md); font-weight: 700; text-decoration: none; }
+.jd-skip:focus { top: var(--jd-space-4); }
+
+/* ==========================================================================================
+   Components
+   ========================================================================================== */
+/* app header / top bar */
+.jd-topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: var(--jd-space-4);
+  padding: var(--jd-space-3) var(--jd-gutter); background: color-mix(in srgb, var(--jd-surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--jd-border); }
+.jd-brand { display: inline-flex; align-items: center; gap: var(--jd-space-2); font-weight: 750; color: var(--jd-text); text-decoration: none; }
+.jd-brand__mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--jd-ink-2); color: #fff; font-size: 14px; }
+
+/* tabs / nav (role="tablist" or <nav>) */
+.jd-tabs { display: flex; gap: var(--jd-space-1); overflow-x: auto; scrollbar-width: none; }
+.jd-tab { appearance: none; border: 0; background: none; cursor: pointer; white-space: nowrap; min-height: 36px;
+  padding: var(--jd-space-2) var(--jd-space-3); border-radius: var(--jd-radius-md); color: var(--jd-text-muted);
+  font: 600 var(--jd-text-sm) / 1.2 var(--jd-font-sans); text-decoration: none; transition: background var(--jd-dur) var(--jd-ease), color var(--jd-dur); }
+.jd-tab:hover { background: var(--jd-surface-2); color: var(--jd-text); }
+.jd-tab[aria-selected="true"], .jd-tab[aria-current="page"], .jd-tab.is-active { background: var(--jd-surface-2); color: var(--jd-text);
+  box-shadow: inset 0 -2px 0 var(--jd-accent); }
+
+/* buttons: .jd-btn + --primary | --secondary | --ghost | --danger, sizes --sm | --lg */
+.jd-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--jd-space-2); min-height: 40px;
+  padding: 0 var(--jd-space-4); border-radius: var(--jd-radius-md); border: 1px solid transparent; cursor: pointer;
+  font: 650 var(--jd-text-sm) / 1 var(--jd-font-sans); text-decoration: none; white-space: nowrap;
+  transition: background var(--jd-dur) var(--jd-ease), border-color var(--jd-dur), transform var(--jd-dur-fast); }
+.jd-btn:active { transform: translateY(1px); }
+.jd-btn--primary { background: var(--jd-accent); color: var(--jd-on-accent); }
+.jd-btn--primary:hover { background: color-mix(in srgb, var(--jd-accent) 88%, #000); }
+.jd-btn--secondary { background: var(--jd-surface); color: var(--jd-text); border-color: var(--jd-border-strong); }
+.jd-btn--secondary:hover { background: var(--jd-surface-2); }
+.jd-btn--ghost { background: transparent; color: var(--jd-text); }
+.jd-btn--ghost:hover { background: var(--jd-surface-2); }
+.jd-btn--danger { background: var(--jd-danger); color: #fff; }
+.jd-btn--sm { min-height: 32px; padding: 0 var(--jd-space-3); font-size: var(--jd-text-xs); }
+.jd-btn--lg { min-height: 48px; padding: 0 var(--jd-space-6); font-size: var(--jd-text-base); }
+.jd-btn[disabled], .jd-btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; transform: none; }
+.jd-btn[aria-busy="true"]::after { content: ""; width: 1em; height: 1em; border-radius: 50%; border: 2px solid currentColor;
+  border-right-color: transparent; animation: jd-spin 0.7s linear infinite; }
+@keyframes jd-spin { to { transform: rotate(360deg); } }
+
+/* cards */
+.jd-card { background: var(--jd-surface); border: 1px solid var(--jd-border); border-radius: var(--jd-radius-lg);
+  padding: var(--jd-space-5); box-shadow: var(--jd-shadow-1); min-width: 0; }
+.jd-card--interactive { transition: box-shadow var(--jd-dur) var(--jd-ease), border-color var(--jd-dur), transform var(--jd-dur); }
+.jd-card--interactive:hover { box-shadow: var(--jd-shadow-2); border-color: var(--jd-border-strong); transform: translateY(-2px); }
+.jd-card__title { font: 650 var(--jd-text-lg) / var(--jd-leading-snug) var(--jd-font-sans); margin: 0 0 var(--jd-space-2); }
+.jd-card--inverse { background: var(--jd-ink-2); color: #fff; border-color: transparent; }
+
+/* stat tile */
+.jd-stat { display: flex; flex-direction: column; gap: var(--jd-space-1); }
+.jd-stat__label { font: 600 var(--jd-text-xs) / 1.2 var(--jd-font-sans); letter-spacing: var(--jd-tracking-caps); text-transform: uppercase; color: var(--jd-text-muted); }
+.jd-stat__value { font: 700 var(--jd-text-3xl) / 1.1 var(--jd-font-display); color: var(--jd-text); }
+.jd-stat__note { font-size: var(--jd-text-sm); color: var(--jd-text-subtle); }
+
+/* badges: neutral | --success | --warning | --danger | --info | --accent (always with text, never colour alone) */
+.jd-badge { display: inline-flex; align-items: center; gap: 0.35em; padding: 0.15rem 0.55rem; border-radius: var(--jd-radius-pill);
+  font: 650 var(--jd-text-xs) / 1.5 var(--jd-font-sans); background: var(--jd-surface-2); color: var(--jd-text-muted); border: 1px solid var(--jd-border); }
+.jd-badge--success { background: var(--jd-success-soft); color: var(--jd-success); border-color: transparent; }
+.jd-badge--warning { background: var(--jd-warning-soft); color: var(--jd-warning); border-color: transparent; }
+.jd-badge--danger  { background: var(--jd-danger-soft);  color: var(--jd-danger);  border-color: transparent; }
+.jd-badge--info    { background: var(--jd-info-soft);    color: var(--jd-info);    border-color: transparent; }
+.jd-badge--accent  { background: var(--jd-accent-soft);  color: var(--jd-accent-text); border-color: transparent; }
+.jd-chip { display: inline-flex; padding: 0.2rem 0.6rem; border-radius: var(--jd-radius-pill); border: 1px solid var(--jd-border);
+  font: 500 var(--jd-text-xs) / 1.5 var(--jd-font-mono); color: var(--jd-text-muted); }
+
+/* forms */
+.jd-field { display: flex; flex-direction: column; gap: var(--jd-space-1); }
+.jd-label { font: 600 var(--jd-text-sm) / 1.3 var(--jd-font-sans); color: var(--jd-text); }
+.jd-input, .jd-select, .jd-textarea { width: 100%; min-height: 40px; padding: var(--jd-space-2) var(--jd-space-3);
+  border: 1px solid var(--jd-border-strong); border-radius: var(--jd-radius-md); background: var(--jd-surface); color: var(--jd-text);
+  font: 400 var(--jd-text-sm) / 1.4 var(--jd-font-sans); transition: border-color var(--jd-dur), box-shadow var(--jd-dur); }
+.jd-input::placeholder, .jd-textarea::placeholder { color: var(--jd-text-subtle); }
+.jd-input:focus-visible, .jd-select:focus-visible, .jd-textarea:focus-visible { border-color: var(--jd-accent-text); }
+.jd-input[aria-invalid="true"] { border-color: var(--jd-danger); }
+.jd-help { font-size: var(--jd-text-xs); color: var(--jd-text-subtle); }
+.jd-error { font-size: var(--jd-text-xs); color: var(--jd-danger); }
+
+/* tables: wrap in .jd-table-wrap for small screens */
+.jd-table-wrap { overflow-x: auto; border: 1px solid var(--jd-border); border-radius: var(--jd-radius-lg); background: var(--jd-surface); }
+.jd-table { width: 100%; border-collapse: collapse; font-size: var(--jd-text-sm); }
+.jd-table th { text-align: left; font: 650 var(--jd-text-xs) / 1.3 var(--jd-font-sans); letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--jd-text-muted); background: var(--jd-surface-2); padding: var(--jd-space-3) var(--jd-space-4); position: sticky; top: 0; }
+.jd-table td { padding: var(--jd-space-3) var(--jd-space-4); border-top: 1px solid var(--jd-border); vertical-align: top; }
+.jd-table tbody tr:hover { background: var(--jd-surface-2); }
+.jd-table td.num, .jd-table th.num { text-align: right; }
+
+/* alerts / inline messages (role="status" or role="alert") */
+.jd-alert { display: flex; gap: var(--jd-space-3); padding: var(--jd-space-3) var(--jd-space-4); border-radius: var(--jd-radius-md);
+  border: 1px solid var(--jd-border); background: var(--jd-surface-2); font-size: var(--jd-text-sm); }
+.jd-alert--success { background: var(--jd-success-soft); border-color: transparent; color: var(--jd-success); }
+.jd-alert--warning { background: var(--jd-warning-soft); border-color: transparent; color: var(--jd-warning); }
+.jd-alert--danger  { background: var(--jd-danger-soft);  border-color: transparent; color: var(--jd-danger); }
+
+/* code / terminal output */
+.jd-term { background: #0b1320; color: #d6e2ee; border-radius: var(--jd-radius-md); padding: var(--jd-space-4); overflow: auto;
+  font: 400 var(--jd-text-sm) / 1.5 var(--jd-font-mono); white-space: pre-wrap; }
+
+/* empty state */
+.jd-empty { text-align: center; padding: var(--jd-space-10) var(--jd-space-4); color: var(--jd-text-muted);
+  border: 1px dashed var(--jd-border-strong); border-radius: var(--jd-radius-lg); }
+
+/* theme toggle button (optional): <button class="jd-btn jd-btn--ghost jd-theme-toggle" aria-label="Switch theme"> */
+.jd-theme-toggle { min-width: 40px; padding: 0; }
+
+/* ==========================================================================================
+   Accent layer (v1.1): category colour, aurora band, accent card, gradient headline
+   ========================================================================================== */
+/* category scope: sets --jd-cat (fill) and --jd-cat-text (text) for everything inside */
+.jd-cat--py    { --jd-cat: var(--jd-cat-py);    --jd-cat-fg: var(--jd-cat-py-text); }
+.jd-cat--api   { --jd-cat: var(--jd-cat-api);   --jd-cat-fg: var(--jd-cat-api-text); }
+.jd-cat--data  { --jd-cat: var(--jd-cat-data);  --jd-cat-fg: var(--jd-cat-data-text); }
+.jd-cat--ml    { --jd-cat: var(--jd-cat-ml);    --jd-cat-fg: var(--jd-cat-ml-text); }
+.jd-cat--ops   { --jd-cat: var(--jd-cat-ops);   --jd-cat-fg: var(--jd-cat-ops-text); }
+.jd-cat--tools { --jd-cat: var(--jd-cat-tools); --jd-cat-fg: var(--jd-cat-tools-text); }
+
+/* accent card: category (or aurora) top border, tinted corner, hover glow in the category colour */
+.jd-card--accent { position: relative; overflow: hidden; border-top: 0;
+  background: radial-gradient(28rem 10rem at 100% 0%, color-mix(in srgb, var(--jd-cat, #a78bfa) 10%, transparent), transparent 70%), var(--jd-surface);
+  transition: box-shadow var(--jd-dur) var(--jd-ease), border-color var(--jd-dur), transform var(--jd-dur) var(--jd-ease); }
+.jd-card--accent::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--jd-cat, var(--jd-aurora)); }
+.jd-card--accent:where(:hover, :focus-within) { border-color: color-mix(in srgb, var(--jd-cat, #a78bfa) 55%, var(--jd-border));
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--jd-cat, #a78bfa) var(--jd-glow-strength), transparent), var(--jd-shadow-2); }
+.jd-card--accent.jd-card--interactive:hover { transform: translateY(-3px); }
+.jd-card--aurora::before { background: var(--jd-aurora); }
+
+/* category badge + dot + eyebrow */
+.jd-badge--cat { background: color-mix(in srgb, var(--jd-cat, #a78bfa) 14%, var(--jd-surface)); color: var(--jd-cat-fg, var(--jd-text));
+  border-color: color-mix(in srgb, var(--jd-cat, #a78bfa) 45%, transparent); }
+.jd-badge--cat::before { content: ""; width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--jd-cat); }
+.jd-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--jd-cat, var(--jd-accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--jd-cat, var(--jd-accent)) 22%, transparent); }
+.jd-eyebrow--cat { color: var(--jd-cat-fg, var(--jd-accent-text)); }
+
+/* gradient headline: AA-safe stops in light, vivid stops in dark; solid colour where clipping is unsupported */
+.jd-text-aurora { color: var(--jd-text); }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .jd-text-aurora { background: var(--jd-aurora-text); -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .jd-band--aurora .jd-text-aurora { background: var(--jd-aurora); -webkit-background-clip: text; background-clip: text; color: transparent; }
+}
+
+/* aurora band: navy hero with drifting aurora glows and an aurora rule; same look in light and dark */
+.jd-band--aurora { position: relative; isolation: isolate; overflow: hidden; background: var(--jd-band); color: var(--jd-on-band); }
+.jd-band--aurora::before { content: ""; position: absolute; inset: -30% -10%; z-index: -1; opacity: 0.4; filter: blur(40px);
+  background:
+    radial-gradient(30% 45% at 12% 30%, #f2a541, transparent 70%),
+    radial-gradient(28% 40% at 40% 85%, #fb7185, transparent 70%),
+    radial-gradient(30% 45% at 72% 20%, #a78bfa, transparent 70%),
+    radial-gradient(28% 45% at 95% 75%, #38bdf8, transparent 70%);
+  animation: jd-aurora-drift 22s ease-in-out infinite alternate; }
+.jd-band--aurora::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--jd-aurora); }
+.jd-band--aurora :is(h1, h2, h3) { color: var(--jd-on-band); }
+.jd-band--aurora :is(p, .jd-muted) { color: var(--jd-on-band-muted); }
+.jd-band--aurora .jd-eyebrow { color: #f5b45e; }
+.jd-band--aurora a { color: #f5b45e; }
+@keyframes jd-aurora-drift { from { transform: translate3d(-3%, 0, 0) scale(1); } to { transform: translate3d(3%, -4%, 0) scale(1.08); } }
+
+/* aurora rule (thin divider) */
+.jd-rule--aurora { height: 3px; border: 0; border-radius: 3px; background: var(--jd-aurora); margin: 0; }
+
+/* staggered reveal: add .jd-reveal and style="--i:N" (N = index); reduced motion shows it at once */
+.jd-reveal { animation: jd-rise 0.55s var(--jd-ease) both; animation-delay: calc(min(var(--i, 0), 16) * 45ms); }
+@keyframes jd-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .jd-band--aurora::before { animation: none; }
+}
+@media (forced-colors: active) {
+  .jd-btn, .jd-card, .jd-badge, .jd-input { border: 1px solid CanvasText; }
+}

@@ -5,11 +5,12 @@
 {% block title %}{{ "Edit " ~ review.case_reference if editing else "New review" }} · Model Review Board{% endblock %}
 
 {% macro field_error(name) -%}
-  {% if errors[name] %}<p class="field-error" id="{{ name }}-error">{{ icon("warning", 14) }}{{ errors[name] }}</p>{% endif %}
+  {% if errors[name] %}<p class="jd-error field-error" id="{{ name }}-error">{{ icon("warning", 14) }}{{ errors[name] }}</p>{% endif %}
 {%- endmacro %}
 
-{% macro invalid(name) -%}
-  {% if errors[name] %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}
+{# Every field has help text; an error is added to aria-describedby when present. #}
+{% macro described(name) -%}
+  aria-describedby="{{ name }}-help{{ ' ' ~ name ~ '-error' if errors[name] }}"{% if errors[name] %} aria-invalid="true"{% endif %}
 {%- endmacro %}
 
 {% block content %}
@@ -19,54 +20,58 @@
 <div class="page-head">
   <div>
     <h1>{{ "Edit review " ~ review.case_reference if editing else "New review" }}</h1>
-    <p class="subtle">{{ "Record your decision and leave notes for the next reviewer." if editing else "Add a model prediction to the review queue." }}</p>
+    <p class="jd-muted lead">{{ "Record your decision and leave notes for the next reviewer." if editing else "Add a model prediction to the review queue." }}</p>
   </div>
 </div>
 
 {% if errors %}
-<p class="flash flash-error" role="alert">{{ icon("warning", 18) }}Please fix the {{ errors|length }} highlighted field{{ "s" if errors|length > 1 }} below.</p>
+<p class="jd-alert jd-alert--danger flash" role="alert">{{ icon("warning", 18) }}<span>Please fix the {{ errors|length }} highlighted field{{ "s" if errors|length > 1 }} below.</span></p>
 {% endif %}
 
-<form method="post" class="card review-form" novalidate
+<form method="post" class="jd-card review-form" novalidate
       action="{{ url_for('reviews.edit_review', review_id=review.id) if editing else url_for('reviews.create_review') }}">
 
   <fieldset>
     <legend>Prediction</legend>
 
-    <div class="field">
-      <label for="case_reference">Case reference</label>
-      <input id="case_reference" name="case_reference" maxlength="64" required placeholder="e.g. CASE-104"
-             value="{{ values.case_reference or '' }}" {{ invalid("case_reference") }}>
+    <div class="jd-field field">
+      <label class="jd-label" for="case_reference">Case reference</label>
+      <input class="jd-input" id="case_reference" name="case_reference" maxlength="64" required placeholder="e.g. CASE-104"
+             value="{{ values.case_reference or '' }}" {{ described("case_reference") }}>
+      <p class="jd-help" id="case_reference-help">Required. Up to 64 characters.</p>
       {{ field_error("case_reference") }}
     </div>
 
     <div class="field-row">
-      <div class="field">
-        <label for="prediction">Prediction</label>
-        <input id="prediction" name="prediction" maxlength="120" required placeholder="e.g. fraud"
-               value="{{ values.prediction or '' }}" {{ invalid("prediction") }}>
+      <div class="jd-field field">
+        <label class="jd-label" for="prediction">Prediction</label>
+        <input class="jd-input" id="prediction" name="prediction" maxlength="120" required placeholder="e.g. fraud"
+               value="{{ values.prediction or '' }}" {{ described("prediction") }}>
+        <p class="jd-help" id="prediction-help">Required. The label the model returned.</p>
         {{ field_error("prediction") }}
       </div>
-      <div class="field">
-        <label for="confidence">Confidence <span class="optional">0 to 1</span></label>
-        <input id="confidence" name="confidence" type="number" step="0.01" min="0" max="1" required placeholder="0.85"
-               value="{{ values.confidence if values.confidence is not none else '' }}" {{ invalid("confidence") }}>
+      <div class="jd-field field">
+        <label class="jd-label" for="confidence">Confidence <span class="optional">0 to 1</span></label>
+        <input class="jd-input" id="confidence" name="confidence" type="number" step="0.01" min="0" max="1" required placeholder="0.85"
+               value="{{ values.confidence if values.confidence is not none else '' }}" {{ described("confidence") }}>
+        <p class="jd-help" id="confidence-help">Required. A number from 0 to 1.</p>
         {{ field_error("confidence") }}
       </div>
     </div>
 
-    <div class="field">
-      <label for="input_summary">Input summary</label>
-      <textarea id="input_summary" name="input_summary" rows="3" maxlength="500" required
+    <div class="jd-field field">
+      <label class="jd-label" for="input_summary">Input summary</label>
+      <textarea class="jd-textarea" id="input_summary" name="input_summary" rows="3" maxlength="500" required
                 placeholder="What did the model see? Keep it short and free of personal data."
-                {{ invalid("input_summary") }}>{{ values.input_summary or '' }}</textarea>
+                {{ described("input_summary") }}>{{ values.input_summary or '' }}</textarea>
+      <p class="jd-help" id="input_summary-help">Required. Up to 500 characters, no personal data.</p>
       {{ field_error("input_summary") }}
     </div>
   </fieldset>
 
   <fieldset>
     <legend>Decision</legend>
-    <div class="choice-group" role="radiogroup" {{ invalid("decision") }}>
+    <div class="choice-group" role="radiogroup" aria-label="Decision" {% if errors.decision %}aria-invalid="true" aria-describedby="decision-error"{% endif %}>
       {% for option in ("pending", "approved", "rejected") %}
       <label class="choice" data-status="{{ option }}">
         <input type="radio" name="decision" value="{{ option }}"
@@ -77,18 +82,19 @@
     </div>
     {{ field_error("decision") }}
 
-    <div class="field">
-      <label for="notes">Reviewer notes <span class="optional">optional</span></label>
-      <textarea id="notes" name="notes" rows="4" maxlength="2000"
+    <div class="jd-field field">
+      <label class="jd-label" for="notes">Reviewer notes <span class="optional">optional</span></label>
+      <textarea class="jd-textarea" id="notes" name="notes" rows="4" maxlength="2000"
                 placeholder="Why did you decide this? What should the next reviewer know?"
-                {{ invalid("notes") }}>{{ values.notes or '' }}</textarea>
+                {{ described("notes") }}>{{ values.notes or '' }}</textarea>
+      <p class="jd-help" id="notes-help">Up to 2,000 characters.</p>
       {{ field_error("notes") }}
     </div>
   </fieldset>
 
   <div class="form-actions">
-    <button type="submit" class="button">{{ icon("approved", 16) }}{{ "Save changes" if editing else "Create review" }}</button>
-    <a class="button ghost" href="{{ url_for('reviews.review_detail', review_id=review.id) if editing else url_for('reviews.dashboard') }}">Cancel</a>
+    <button type="submit" class="jd-btn jd-btn--primary">{{ icon("approved", 16) }}{{ "Save changes" if editing else "Create review" }}</button>
+    <a class="jd-btn jd-btn--secondary" href="{{ url_for('reviews.review_detail', review_id=review.id) if editing else url_for('reviews.dashboard') }}">Cancel</a>
   </div>
 </form>
 {% endblock %}
