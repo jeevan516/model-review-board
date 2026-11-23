@@ -1,6 +1,6 @@
 # Model Review Board: project notes
 
-_Last updated: 22 Nov 2026_
+_Last updated: 23 Nov 2026_
 
 ## Project
 **Model Review Board.** A small Flask web app where an ML team reviews model predictions
@@ -48,3 +48,4 @@ SQLite locally, PostgreSQL in production.
 - 15 Nov 2026: Dockerfile, compose file and Portainer stack added; PR #1.
 - 16 Nov 2026: presentation deck added: presentation/model-review-board.pptx (9 slides).
 - 22 Nov 2026: UI restyled onto the JD design system (jd.css, light/dark, motion); 29 / 29 tests pass; branch `ui/jd-design-system`.
+- 23 Nov 2026: UI given the JD v1.1 accent layer (aurora hero with a clearer description, APIs & cloud violet on cards); 29 / 29 tests pass; branch `ui/jd-design-system`.
