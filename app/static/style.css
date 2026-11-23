@@ -256,3 +256,25 @@ legend { font: 700 var(--jd-text-xl) / var(--jd-leading-snug) var(--jd-font-disp
 @media (forced-colors: active) {
   .stack-seg, .legend-swatch, .meter-fill { forced-color-adjust: none; }
 }
+
+/* ---------- Accent layer (jd.css v1.1): aurora hero, APIs & cloud violet (body.jd-cat--api) ----------
+   Decision colours stay the jd status colours; the category colour only marks frames and glows. */
+.site-header { position: sticky; }
+.site-header::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--jd-aurora); }
+.brand img { box-shadow: 0 4px 14px -6px var(--jd-cat); }
+.page-head.hero { padding: var(--jd-space-8); border-radius: var(--jd-radius-xl); box-shadow: var(--jd-shadow-2); align-items: flex-end; }
+.page-head.hero > div { min-width: 0; max-width: 64ch; }
+.page-head.hero h1 { display: block; }
+.hero .hero-cat { display: inline-flex; align-items: center; gap: var(--jd-space-2); margin: 0 0 var(--jd-space-3); color: var(--jd-cat);
+  font: 700 var(--jd-text-xs) / 1.3 var(--jd-font-sans); letter-spacing: var(--jd-tracking-caps); text-transform: uppercase; }
+.hero .lead { color: var(--jd-on-band); font-size: var(--jd-text-lg); margin-top: var(--jd-space-3); }
+.hero .lead-2 { color: var(--jd-on-band-muted); font-size: var(--jd-text-sm); margin: var(--jd-space-2) 0 0; }
+.hero .jd-btn--secondary { background: rgb(255 255 255 / 0.08); color: var(--jd-on-band); border-color: rgb(255 255 255 / 0.3); }
+.hero .jd-btn--secondary:hover { background: color-mix(in srgb, var(--jd-cat) 25%, transparent); border-color: var(--jd-cat); }
+.distribution, .detail-grid > .jd-card, .notes-card, .review-form, .confirm-card { position: relative; overflow: hidden; }
+.distribution::before, .detail-grid > .jd-card::before, .notes-card::before, .review-form::before, .confirm-card::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--jd-cat); }
+.review-form::before { background: var(--jd-aurora); }
+.jd-card--interactive:hover, .distribution:hover { border-color: color-mix(in srgb, var(--jd-cat) 45%, var(--jd-border));
+  box-shadow: 0 14px 32px -16px color-mix(in srgb, var(--jd-cat) var(--jd-glow-strength), transparent), var(--jd-shadow-2); }
+@media (max-width: 560px) { .page-head.hero { padding: var(--jd-space-6) var(--jd-space-5); } .hero .lead { font-size: var(--jd-text-base); } }

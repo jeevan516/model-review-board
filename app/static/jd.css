@@ -1,9 +1,11 @@
 /* ==========================================================================================
-   JD design system · jd.css · v1.0 (22 Nov 2026)
+   JD design system · jd.css · v1.1 (23 Nov 2026)
    One file for every Jeevan D site and project UI: tokens, base styles, components.
    Copy it into a project (static/jd.css) and link it before the project's own CSS.
    Light and dark: follows the OS, and <html data-theme="light|dark"> overrides it both ways.
    Contrast: every text token >= 4.5:1 (WCAG AA) on bg, surface and surface-2, in both modes.
+   v1.1 adds the vivid accent layer: category colours (--jd-cat-*), the aurora gradient, .jd-cat--*,
+   .jd-card--accent, .jd-band--aurora, .jd-text-aurora, .jd-badge--cat, .jd-reveal.
    Rules and usage: DESIGN.md next to this file.
    ========================================================================================== */
 
@@ -74,6 +76,22 @@
   --jd-series-5: #e87ba4; --jd-series-6: #008300; --jd-series-7: #6250d6; --jd-series-8: #e34948;
   --jd-grid: #e4e9ee; --jd-axis: #b6c1cc;
   --jd-status-good: #0ca30c; --jd-status-warning: #fab219; --jd-status-serious: #ec835a; --jd-status-critical: #d03b3b;
+
+  /* ---- accent layer (v1.1): category colours + aurora. Shared with the portfolio; keep these exact values.
+         --jd-cat-* are FILLS (bars, borders, glows, dots, gradients); text uses --jd-cat-*-text (AA on every surface).
+         Never use them for chart series: data keeps --jd-series-*. ---- */
+  --jd-cat-py: #38bdf8;    --jd-cat-py-text: #0369a1;     /* Python foundations · sky    5.3:1+ */
+  --jd-cat-api: #a78bfa;   --jd-cat-api-text: #6d28d9;    /* APIs & cloud · violet       6.3:1+ */
+  --jd-cat-data: #2dd4bf;  --jd-cat-data-text: #0f766e;   /* Data engineering · teal     4.9:1+ */
+  --jd-cat-ml: #fb7185;    --jd-cat-ml-text: #be123c;     /* Machine learning · coral    5.6:1+ */
+  --jd-cat-ops: #f2a541;   --jd-cat-ops-text: #9a5400;    /* MLOps & deployment · amber  5.1:1+ */
+  --jd-cat-tools: #f472b6; --jd-cat-tools-text: #be185d;  /* Tools & agents · pink       5.4:1+ */
+  --jd-on-cat: #0f1b2d;                                   /* text on any vivid fill: 6.3:1+ */
+  --jd-aurora: linear-gradient(135deg, #f2a541 0%, #fb7185 35%, #a78bfa 70%, #38bdf8 100%);
+  --jd-aurora-text: linear-gradient(135deg, #9a5400 0%, #be123c 35%, #6d28d9 70%, #0369a1 100%); /* gradient text on light */
+  --jd-band: #0f1b2d;      /* aurora band background: navy in both themes */
+  --jd-on-band: #ffffff; --jd-on-band-muted: #c9d6e2;   /* 17:1, 11.7:1 */
+  --jd-glow-strength: 28%;
 }
 
 /* ---- colour: dark (same names, own steps; validated on #111c2e) ---- */
@@ -90,6 +108,8 @@
     --jd-series-1: #3987e5; --jd-series-2: #d95926; --jd-series-3: #199e70; --jd-series-4: #c98500;
     --jd-series-5: #d55181; --jd-series-6: #0ca30c; --jd-series-7: #9085e9; --jd-series-8: #e66767;
     --jd-grid: #1f2f45; --jd-axis: #3a5070;
+    --jd-cat-py-text: #38bdf8; --jd-cat-api-text: #a78bfa; --jd-cat-data-text: #2dd4bf; --jd-cat-ml-text: #fb7185;
+    --jd-cat-ops-text: #f2a541; --jd-cat-tools-text: #f472b6; --jd-aurora-text: var(--jd-aurora); --jd-band: #08101c; --jd-glow-strength: 38%;
   }
 }
 :root[data-theme="dark"] { color-scheme: dark;
@@ -104,6 +124,8 @@
   --jd-series-1: #3987e5; --jd-series-2: #d95926; --jd-series-3: #199e70; --jd-series-4: #c98500;
   --jd-series-5: #d55181; --jd-series-6: #0ca30c; --jd-series-7: #9085e9; --jd-series-8: #e66767;
   --jd-grid: #1f2f45; --jd-axis: #3a5070;
+  --jd-cat-py-text: #38bdf8; --jd-cat-api-text: #a78bfa; --jd-cat-data-text: #2dd4bf; --jd-cat-ml-text: #fb7185;
+  --jd-cat-ops-text: #f2a541; --jd-cat-tools-text: #f472b6; --jd-aurora-text: var(--jd-aurora); --jd-band: #08101c; --jd-glow-strength: 38%;
 }
 
 /* ==========================================================================================
@@ -245,9 +267,70 @@ body.jd, .jd-root {
 /* theme toggle button (optional): <button class="jd-btn jd-btn--ghost jd-theme-toggle" aria-label="Switch theme"> */
 .jd-theme-toggle { min-width: 40px; padding: 0; }
 
+/* ==========================================================================================
+   Accent layer (v1.1): category colour, aurora band, accent card, gradient headline
+   ========================================================================================== */
+/* category scope: sets --jd-cat (fill) and --jd-cat-text (text) for everything inside */
+.jd-cat--py    { --jd-cat: var(--jd-cat-py);    --jd-cat-fg: var(--jd-cat-py-text); }
+.jd-cat--api   { --jd-cat: var(--jd-cat-api);   --jd-cat-fg: var(--jd-cat-api-text); }
+.jd-cat--data  { --jd-cat: var(--jd-cat-data);  --jd-cat-fg: var(--jd-cat-data-text); }
+.jd-cat--ml    { --jd-cat: var(--jd-cat-ml);    --jd-cat-fg: var(--jd-cat-ml-text); }
+.jd-cat--ops   { --jd-cat: var(--jd-cat-ops);   --jd-cat-fg: var(--jd-cat-ops-text); }
+.jd-cat--tools { --jd-cat: var(--jd-cat-tools); --jd-cat-fg: var(--jd-cat-tools-text); }
+
+/* accent card: category (or aurora) top border, tinted corner, hover glow in the category colour */
+.jd-card--accent { position: relative; overflow: hidden; border-top: 0;
+  background: radial-gradient(28rem 10rem at 100% 0%, color-mix(in srgb, var(--jd-cat, #a78bfa) 10%, transparent), transparent 70%), var(--jd-surface);
+  transition: box-shadow var(--jd-dur) var(--jd-ease), border-color var(--jd-dur), transform var(--jd-dur) var(--jd-ease); }
+.jd-card--accent::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--jd-cat, var(--jd-aurora)); }
+.jd-card--accent:where(:hover, :focus-within) { border-color: color-mix(in srgb, var(--jd-cat, #a78bfa) 55%, var(--jd-border));
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--jd-cat, #a78bfa) var(--jd-glow-strength), transparent), var(--jd-shadow-2); }
+.jd-card--accent.jd-card--interactive:hover { transform: translateY(-3px); }
+.jd-card--aurora::before { background: var(--jd-aurora); }
+
+/* category badge + dot + eyebrow */
+.jd-badge--cat { background: color-mix(in srgb, var(--jd-cat, #a78bfa) 14%, var(--jd-surface)); color: var(--jd-cat-fg, var(--jd-text));
+  border-color: color-mix(in srgb, var(--jd-cat, #a78bfa) 45%, transparent); }
+.jd-badge--cat::before { content: ""; width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--jd-cat); }
+.jd-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--jd-cat, var(--jd-accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--jd-cat, var(--jd-accent)) 22%, transparent); }
+.jd-eyebrow--cat { color: var(--jd-cat-fg, var(--jd-accent-text)); }
+
+/* gradient headline: AA-safe stops in light, vivid stops in dark; solid colour where clipping is unsupported */
+.jd-text-aurora { color: var(--jd-text); }
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .jd-text-aurora { background: var(--jd-aurora-text); -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .jd-band--aurora .jd-text-aurora { background: var(--jd-aurora); -webkit-background-clip: text; background-clip: text; color: transparent; }
+}
+
+/* aurora band: navy hero with drifting aurora glows and an aurora rule; same look in light and dark */
+.jd-band--aurora { position: relative; isolation: isolate; overflow: hidden; background: var(--jd-band); color: var(--jd-on-band); }
+.jd-band--aurora::before { content: ""; position: absolute; inset: -30% -10%; z-index: -1; opacity: 0.4; filter: blur(40px);
+  background:
+    radial-gradient(30% 45% at 12% 30%, #f2a541, transparent 70%),
+    radial-gradient(28% 40% at 40% 85%, #fb7185, transparent 70%),
+    radial-gradient(30% 45% at 72% 20%, #a78bfa, transparent 70%),
+    radial-gradient(28% 45% at 95% 75%, #38bdf8, transparent 70%);
+  animation: jd-aurora-drift 22s ease-in-out infinite alternate; }
+.jd-band--aurora::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--jd-aurora); }
+.jd-band--aurora :is(h1, h2, h3) { color: var(--jd-on-band); }
+.jd-band--aurora :is(p, .jd-muted) { color: var(--jd-on-band-muted); }
+.jd-band--aurora .jd-eyebrow { color: #f5b45e; }
+.jd-band--aurora a { color: #f5b45e; }
+@keyframes jd-aurora-drift { from { transform: translate3d(-3%, 0, 0) scale(1); } to { transform: translate3d(3%, -4%, 0) scale(1.08); } }
+
+/* aurora rule (thin divider) */
+.jd-rule--aurora { height: 3px; border: 0; border-radius: 3px; background: var(--jd-aurora); margin: 0; }
+
+/* staggered reveal: add .jd-reveal and style="--i:N" (N = index); reduced motion shows it at once */
+.jd-reveal { animation: jd-rise 0.55s var(--jd-ease) both; animation-delay: calc(min(var(--i, 0), 16) * 45ms); }
+@keyframes jd-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .jd-band--aurora::before { animation: none; }
 }
 @media (forced-colors: active) {
   .jd-btn, .jd-card, .jd-badge, .jd-input { border: 1px solid CanvasText; }

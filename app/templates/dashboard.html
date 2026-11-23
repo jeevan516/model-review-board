@@ -2,11 +2,12 @@
 {% from "_icons.html" import icon, status_badge, confidence_meter, avatar %}
 
 {% block content %}
-<div class="page-head hero">
+<div class="page-head hero jd-band--aurora">
   <div>
-    <p class="jd-eyebrow">Review queue</p>
-    <h1>Reviews</h1>
-    <p class="jd-muted lead">Check model predictions before they are passed on to other teams.</p>
+    <p class="hero-cat"><span class="jd-dot" aria-hidden="true"></span>APIs &amp; cloud · review queue</p>
+    <h1>Model <span class="jd-text-aurora">reviews</span></h1>
+    <p class="lead">An ML team checks each model prediction here before another department uses it: the case, the predicted label and its confidence, then a reviewer approves or rejects it with notes.</p>
+    <p class="lead-2">Flask app with one relational table: SQLite locally, PostgreSQL on Render and in Docker.</p>
   </div>
   {% if totals.pending %}
   <a class="jd-btn jd-btn--secondary" href="{{ url_for('reviews.dashboard', status='pending') }}">
